@@ -6,6 +6,7 @@ import { Perfil } from "./screens/Perfil";
 import { Placeholder } from "./screens/Placeholder";
 import { Stats } from "./screens/Stats";
 import { NuevaRonda } from "./screens/NuevaRonda";
+import { Clubes } from "./screens/Clubes";
 import { Onboarding } from "./screens/Onboarding";
 import { useProfile } from "./lib/profile";
 
@@ -28,7 +29,7 @@ export default function App() {
         <Route path="/grabar" element={<Placeholder title="Grabar" note="Aquí grabarás tu swing y tu bola." />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/stats/nueva" element={<NuevaRonda />} />
-        <Route path="/clubes" element={<Placeholder title="Clubes" note="El directorio de campos llega en la Fase 5." />} />
+        <Route path="/clubes" element={<Clubes />} />
         <Route path="/perfil" element={<Perfil />} />
       </Routes>
       <GlassTabBar items={TABS} />
