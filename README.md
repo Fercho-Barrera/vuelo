@@ -25,4 +25,4 @@ once Xcode and Android Studio are installed (see `docs/owner-tasks.md`).
 - `src/components/glass` base Liquid Glass components, the only way screens build UI
 - `src/screens` one file per screen
 - `src/lib` data adapter, notification rules, camera and analysis code
-- `supabase/` migrations and edge functions
+- backend: not chosen yet (the owner does not want Supabase)
