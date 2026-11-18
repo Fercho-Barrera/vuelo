@@ -1,116 +1,93 @@
 /*
  * Vuelo design tokens. Screens never hardcode colors: they read these variables.
- * Glass is for controls and navigation floating over content (Apple HIG, materials).
- * The content layer uses the standard surfaces below.
+ * Direction: clean and confident (Revolut, Speechify). Flat solid cards for content, big bold
+ * numerals, one accent color. Glass is reserved for floating navigation and sheets (Apple HIG).
  */
 :root {
-  /* Field green is the accent. Sky, sand and sun support it. */
-  --green-50: #f0f7f1;
-  --green-100: #dcefdf;
-  --green-300: #8cc79a;
-  --green-500: #2f8f4e;
-  --green-600: #25773f;
-  --green-800: #17482a;
-  --sky-100: #dff0fb;
-  --sky-300: #9fd0ee;
-  --sky-500: #3b8fd1;
-  --sand-100: #f6f1e4;
-  --sun-300: #f5d98a;
-  --sun-500: #e8a93a;
-  --ink: #12201a;
-  --ink-2: #3c4a43;
-  --ink-3: #6b7a72;
-  --danger: #c4452d;
+  --green-300: #8fe3b1;
+  --green-500: #0fa968;
+  --green-600: #0a8a54;
+  --forest-900: #072a1d;
+  --forest-700: #0c4a33;
+  --lime: #c6f26b;
+  --danger: #e5484d;
+  --warn: #f5a524;
 
-  /* Semantic */
-  --bg: #f4f7f3;
-  --bg-sky-top: var(--sky-100);
-  --bg-sand: var(--sand-100);
-  --surface: #ffffff;
-  --surface-2: #f0f4ef;
-  --text: var(--ink);
-  --text-2: var(--ink-2);
-  --text-3: var(--ink-3);
+  --bg: #ffffff;
+  --surface: #f3f4f6;       /* flat card */
+  --surface-2: #e9ebee;     /* pressed, tracks */
+  --raised: #ffffff;
+  --text: #0b0d0c;
+  --text-2: #4a4f55;
+  --text-3: #8a9097;
+  --hairline: #e6e8eb;
   --accent: var(--green-500);
   --accent-strong: var(--green-600);
   --accent-contrast: #ffffff;
-  --hairline: rgba(18, 32, 26, 0.1);
+  --ink: #0b0d0c;           /* primary button */
+  --ink-contrast: #ffffff;
+  --hero-from: var(--forest-700);
+  --hero-to: var(--forest-900);
+  --hero-text: #ffffff;
+  --hero-accent: var(--lime);
 
-  /* Glass */
-  --glass-fill: rgba(255, 255, 255, 0.55);
-  --glass-fill-strong: rgba(255, 255, 255, 0.72);
-  --glass-tint: rgba(47, 143, 78, 0.14);
-  --glass-border: rgba(255, 255, 255, 0.7);
-  --glass-edge: rgba(18, 32, 26, 0.08);
-  --glass-highlight: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 45%);
-  --glass-blur: 22px;
+  /* Glass: only floating nav and sheets */
+  --glass-fill: rgba(255, 255, 255, 0.72);
+  --glass-fill-strong: rgba(255, 255, 255, 0.86);
+  --glass-tint: rgba(15, 169, 104, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.8);
+  --glass-edge: rgba(11, 13, 12, 0.08);
+  --glass-highlight: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 45%);
+  --glass-blur: 24px;
   --glass-saturate: 180%;
-  --glass-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 10px 30px rgba(23, 72, 42, 0.12), 0 2px 6px rgba(23, 72, 42, 0.06);
+  --glass-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 8px 28px rgba(11, 13, 12, 0.12);
 
-  /* Shape and rhythm */
   --radius-sm: 12px;
   --radius-md: 20px;
   --radius-lg: 28px;
   --radius-pill: 999px;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  --gutter: 16px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px; --space-6: 32px;
+  --gutter: 20px;
 
-  /* Type: SF Pro on Apple, system sans elsewhere */
-  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, system-ui, sans-serif;
-  --fs-caption: 12px;
-  --fs-body: 16px;
-  --fs-title: 22px;
-  --fs-large: 34px;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", Roboto, system-ui, sans-serif;
+  --fs-caption: 13px; --fs-body: 16px; --fs-title: 20px; --fs-large: 32px; --fs-hero: 64px;
 
-  /* Motion */
   --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-fast: 160ms;
-  --dur: 280ms;
+  --dur-fast: 160ms; --dur: 280ms;
 
-  /* Safe areas (notch, home indicator) */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0d1511;
-    --bg-sky-top: #12283a;
-    --bg-sand: #1a1a14;
-    --surface: #17211b;
-    --surface-2: #1e2a23;
-    --text: #eef4ef;
-    --text-2: #c2cfc6;
-    --text-3: #8b9a91;
-    --hairline: rgba(238, 244, 239, 0.12);
-    --glass-fill: rgba(28, 40, 33, 0.55);
-    --glass-fill-strong: rgba(28, 40, 33, 0.78);
-    --glass-tint: rgba(140, 199, 154, 0.12);
-    --glass-border: rgba(255, 255, 255, 0.14);
-    --glass-edge: rgba(0, 0, 0, 0.4);
-    --glass-highlight: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 45%);
-    --glass-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 10px 30px rgba(0, 0, 0, 0.4);
+    --bg: #000000;
+    --surface: #141517;
+    --surface-2: #1f2124;
+    --raised: #1f2124;
+    --text: #f5f6f7;
+    --text-2: #b6bbc1;
+    --text-3: #7d838a;
+    --hairline: #24272a;
+    --accent: #2fd68a;
+    --accent-strong: #5ae0a3;
+    --accent-contrast: #04140c;
+    --ink: #f5f6f7;
+    --ink-contrast: #0b0d0c;
+    --glass-fill: rgba(28, 30, 33, 0.7);
+    --glass-fill-strong: rgba(28, 30, 33, 0.86);
+    --glass-tint: rgba(47, 214, 138, 0.14);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-edge: rgba(0, 0, 0, 0.5);
+    --glass-highlight: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0) 45%);
+    --glass-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset, 0 8px 28px rgba(0, 0, 0, 0.6);
   }
 }
 
-/* Accessibility: frostier glass, no blur dependence */
 @media (prefers-reduced-transparency: reduce) {
-  :root {
-    --glass-fill: var(--surface);
-    --glass-fill-strong: var(--surface);
-    --glass-blur: 0px;
-    --glass-saturate: 100%;
-  }
+  :root { --glass-fill: var(--surface); --glass-fill-strong: var(--surface); --glass-blur: 0px; --glass-saturate: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  :root {
-    --dur-fast: 1ms;
-    --dur: 1ms;
-  }
+  :root { --dur-fast: 1ms; --dur: 1ms; }
 }

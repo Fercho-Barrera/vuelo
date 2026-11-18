@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { GlassButton, GlassCard, GlassSheet, PillSelector } from "../components/glass";
+import { Button, ButtonAnchor, Card, GlassSheet, ListRow, PillSelector } from "../components/glass";
+import { FlagIcon } from "../components/icons";
 import { CLUBS, filterClubs, mapsLink, noFilters, sortByDistance, waLink, type Club, type Filters } from "../lib/clubs";
 import { getFavorites, toggleFavorite } from "../lib/favorites";
 
@@ -32,7 +33,7 @@ export function Clubes() {
     <main className="screen">
       <h1>Clubes</h1>
       <PillSelector<Filters["city"]> label="Ciudad" value={f.city} onChange={(city) => setF({ ...f, city })} options={[{ value: "todas", label: "Todas" }, { value: "CDMX", label: "CDMX" }, { value: "Querétaro", label: "Querétaro" }]} />
-      <div className="chips" style={{ marginTop: 0 }}>
+      <div className="chips chips--scroll">
         <button type="button" className="chip" aria-pressed={pos !== null} onClick={locate}>Cerca de mí</button>
         <button type="button" className="chip" aria-pressed={f.nonMembers} onClick={() => setF({ ...f, nonMembers: !f.nonMembers })}>Acepta no socios</button>
         <button type="button" className="chip" aria-pressed={f.beginner} onClick={() => setF({ ...f, beginner: !f.beginner })}>Para principiantes</button>
@@ -40,20 +41,16 @@ export function Clubes() {
         <button type="button" className="chip" aria-pressed={onlyFavs} onClick={() => setOnlyFavs(!onlyFavs)}>Favoritos</button>
       </div>
       {geoError && <span className="muted">No pudimos ubicarte. Revisa el permiso de ubicación.</span>}
-      {list.length === 0 && <GlassCard><p className="muted" style={{ margin: 0 }}>{CLUBS.length === 0 ? "Aún no hay clubes cargados." : "Ningún club coincide con tus filtros."}</p></GlassCard>}
-      {list.map((c) => (
-        <GlassCard key={c.id} role="button" tabIndex={0} onClick={() => setOpen(c)} onKeyDown={(e) => e.key === "Enter" && setOpen(c)} style={{ cursor: "pointer" }}>
-          <div className="row">
-            <h2>{c.name}</h2>
-            {favs.includes(c.id) && <span aria-label="Favorito">★</span>}
-          </div>
-          <span className="muted">{c.city}{c.holes ? ` · ${c.holes} hoyos` : ""}</span>
-          <div className="row" style={{ marginTop: 8 }}>
-            <strong>{c.priceFromMXN !== null ? `Desde ${mxn(c.priceFromMXN)}` : "Precio: consulta al club"}</strong>
-            <span className="muted">{c.acceptsNonMembers === true ? "Acepta no socios" : c.acceptsNonMembers === false ? "Solo socios" : ""}</span>
-          </div>
-        </GlassCard>
-      ))}
+      {list.length === 0 && <Card><p className="muted" style={{ margin: 0 }}>{CLUBS.length === 0 ? "Aún no hay clubes cargados." : "Ningún club coincide con tus filtros."}</p></Card>}
+      {list.length > 0 && (
+        <Card flush>
+          {list.map((c) => (
+            <ListRow key={c.id} icon={<FlagIcon />} accent={favs.includes(c.id)} title={c.name}
+              sub={`${c.city}${c.holes ? ` · ${c.holes} hoyos` : ""}${c.acceptsNonMembers === true ? " · Acepta no socios" : c.acceptsNonMembers === false ? " · Solo socios" : ""}`}
+              trail={c.priceFromMXN !== null ? mxn(c.priceFromMXN) : ""} onClick={() => setOpen(c)} />
+          ))}
+        </Card>
+      )}
       <GlassSheet open={open !== null} onClose={() => setOpen(null)} title={open?.name ?? ""}>
         {open && (
           <div className="stack">
@@ -61,10 +58,10 @@ export function Clubes() {
             <span>{open.priceFromMXN !== null ? `Desde ${mxn(open.priceFromMXN)}` : "Precio: consulta al club"}{open.priceNote ? `. ${open.priceNote}` : ""}</span>
             {open.amenities.length > 0 && <div className="chips">{open.amenities.map((a) => <span key={a} className="chip" style={{ cursor: "default" }}>{AMENITY[a]}</span>)}</div>}
             <span className="muted">Precios y horarios cambian: confirma con el club antes de ir. Datos verificados el {open.verifiedOn}.</span>
-            {(open.whatsapp ?? open.phone) && <a className="glass glass-button glass-button--primary glass-button--block" style={{ textDecoration: "none" }} href={open.whatsapp ? waLink(open.whatsapp) : `tel:${open.phone}`}>{open.whatsapp ? "Reservar por WhatsApp" : "Llamar al club"}</a>}
-            <a className="glass glass-button glass-button--block" style={{ textDecoration: "none" }} href={mapsLink(open)}>Abrir en Mapas</a>
-            {open.website && <a className="glass glass-button glass-button--block" style={{ textDecoration: "none" }} href={open.website}>Sitio del club</a>}
-            <GlassButton block onClick={() => setFavs(toggleFavorite(open.id))}>{favs.includes(open.id) ? "Quitar de favoritos" : "Guardar en favoritos"}</GlassButton>
+            {(open.whatsapp ?? open.phone) && <ButtonAnchor variant="primary" block href={open.whatsapp ? waLink(open.whatsapp) : `tel:${open.phone}`}>{open.whatsapp ? "Reservar por WhatsApp" : "Llamar al club"}</ButtonAnchor>}
+            <ButtonAnchor block href={mapsLink(open)}>Abrir en Mapas</ButtonAnchor>
+            {open.website && <ButtonAnchor block href={open.website}>Sitio del club</ButtonAnchor>}
+            <Button block onClick={() => setFavs(toggleFavorite(open.id))}>{favs.includes(open.id) ? "Quitar de favoritos" : "Guardar en favoritos"}</Button>
           </div>
         )}
       </GlassSheet>

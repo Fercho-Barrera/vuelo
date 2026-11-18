@@ -63,3 +63,20 @@ export function lossAreas(rounds: Round[]): Loss[] {
   ];
   return all.sort((a, b) => b.strokes - a.strokes);
 }
+
+export type Overview = { rounds: number; avgScore: number; puttsPerHole: number; girPct: number; fairwayPct: number };
+
+export function overview(rounds: Round[]): Overview | null {
+  const full = rounds.filter((r) => r.holes.length > 0);
+  if (full.length === 0) return null;
+  const sums = full.map(summarize);
+  const holes = full.reduce((a, r) => a + r.holes.length, 0);
+  const avg = (f: (s: Summary) => number) => sums.reduce((a, s) => a + f(s), 0) / sums.length;
+  return {
+    rounds: full.length,
+    avgScore: Math.round(avg((s) => s.total) * 10) / 10,
+    puttsPerHole: Math.round((sums.reduce((a, s) => a + s.putts, 0) / holes) * 100) / 100,
+    girPct: Math.round(avg((s) => s.girPct)),
+    fairwayPct: Math.round(avg((s) => s.fairwayPct)),
+  };
+}

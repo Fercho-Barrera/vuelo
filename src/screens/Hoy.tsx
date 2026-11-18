@@ -1,41 +1,72 @@
 import { useEffect, useState } from "react";
-import { GlassCard, StatRing } from "../components/glass";
+import { Actions, Card, ListRow, SectionHeader } from "../components/glass";
+import { CalendarIcon, FlagIcon, ListIcon, PinIcon, PlusIcon, TargetIcon, VideoIcon } from "../components/icons";
 import { data } from "../lib/data";
-import { buildPracticePlan, type Drill } from "../lib/practicePlan";
-import { lossAreas } from "../lib/stats";
-
+import { buildPracticePlan } from "../lib/practicePlan";
 import { useProfile } from "../lib/profile";
+import { handicapEstimate, lossAreas, summarize, type Round } from "../lib/stats";
+
+const fmtDate = (iso: string) => new Date(`${iso}T12:00:00`).toLocaleDateString("es-MX", { day: "numeric", month: "short" });
+const sign = (n: number) => (n > 0 ? `+${n}` : String(n));
 
 export function Hoy() {
   const { profile } = useProfile();
-  const [drill, setDrill] = useState<Drill | null>(null);
-  useEffect(() => {
-    void data.getRounds().then((rs) => setDrill(buildPracticePlan({ loss: rs.length ? lossAreas(rs)[0] : null, faults: [] })[0] ?? null));
-  }, []);
+  const [rounds, setRounds] = useState<Round[]>([]);
+  useEffect(() => { void data.getRounds().then(setRounds); }, []);
+
+  const sorted = rounds.slice().sort((a, b) => b.date.localeCompare(a.date));
+  const hcp = handicapEstimate(rounds);
+  const plan = buildPracticePlan({ loss: rounds.length ? lossAreas(rounds)[0] : null, faults: [] });
+  const last = sorted[0] ? summarize(sorted[0]) : null;
+  const initial = (profile?.name ?? "G").trim().charAt(0).toUpperCase();
+
   return (
     <main className="screen">
-      <header className="stack">
-        <span className="label-caption">Hoy</span>
-        <h1>Buen día, {profile?.name ?? "golfista"}</h1>
-        <span className="muted">Aquí verás tu próximo tee time y tu práctica del día.</span>
-      </header>
-
-      <GlassCard>
-        <div className="label-caption">Próximo tee time</div>
-        <h2 style={{ marginTop: 6 }}>Aún no tienes uno</h2>
-        <p className="muted" style={{ margin: "6px 0 0" }}>Encuentra un campo en la pestaña Clubes.</p>
-      </GlassCard>
-
-      <GlassCard>
-        <div className="row">
-          <div className="stack">
-            <div className="label-caption">Drill del día</div>
-            <h2>{drill ? "Práctica de hoy" : "Registra tu primera ronda"}</h2>
-            <span className="muted">{drill ? drill.text : "Con tus rondas te armamos un plan de práctica."}</span>
-          </div>
-          <StatRing value={0} max={3} label="esta semana" display="0/3" size={88} />
+      <div className="topbar">
+        <div className="stack" style={{ gap: 2 }}>
+          <span className="label-caption">Hola</span>
+          <h1>{profile?.name ?? "Golfista"}</h1>
         </div>
-      </GlassCard>
+        <div className="avatar" aria-hidden="true">{initial}</div>
+      </div>
+
+      <Card hero>
+        <div className="label-caption">Hándicap estimado</div>
+        <div className="num-hero" style={{ margin: "8px 0 14px" }}>{hcp !== null ? hcp.toFixed(1) : "--"}</div>
+        <div className="chips">
+          <span className="pillbadge">{rounds.length === 0 ? "Registra tu primera ronda" : hcp === null ? `${rounds.length} de 3 rondas para calcularlo` : `Basado en ${rounds.length} rondas`}</span>
+          {last && <span className="pillbadge">Última: {last.total} ({sign(last.toPar)})</span>}
+        </div>
+      </Card>
+
+      <Actions items={[
+        { to: "/grabar", label: "Grabar", icon: <VideoIcon /> },
+        { to: "/stats/nueva", label: "Ronda", icon: <PlusIcon /> },
+        { to: "/clubes", label: "Clubes", icon: <FlagIcon /> },
+        { to: "/stats", label: "Stats", icon: <ListIcon /> },
+      ]} />
+
+      <SectionHeader title="Práctica de hoy" />
+      <Card flush>
+        {plan.length > 0 ? plan.map((d, i) => <ListRow key={i} icon={<TargetIcon />} accent={i === 0} title={d.source === "stats" ? "Desde tus rondas" : "Desde tu swing"} sub={d.text} />)
+          : <ListRow icon={<TargetIcon />} title="Aún sin plan" sub="Con tus rondas te armamos la práctica de la semana." />}
+      </Card>
+
+      <SectionHeader title="Próximo tee time" />
+      <Card flush>
+        <ListRow icon={<CalendarIcon />} title="Sin reservas" sub="Encuentra un campo y reserva con el club." />
+      </Card>
+
+      {sorted.length > 0 && (
+        <>
+          <SectionHeader title="Últimas rondas" to="/stats" cta="Ver todo" />
+          <Card flush>
+            {sorted.slice(0, 3).map((r) => { const s = summarize(r); return (
+              <ListRow key={r.id} icon={<PinIcon />} title={r.courseName} sub={fmtDate(r.date)} trail={<>{s.total} <span className="muted" style={{ fontWeight: 600 }}>{sign(s.toPar)}</span></>} />
+            ); })}
+          </Card>
+        </>
+      )}
     </main>
   );
 }
