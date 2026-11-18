@@ -37,3 +37,9 @@ body::before {
   opacity: 0.85;
 }
 @media (prefers-color-scheme: dark) { body::before { opacity: 0.4; } }
+
+.field { width: 100%; min-height: 48px; padding: 0 16px; border-radius: var(--radius-md); border: 1px solid var(--glass-edge); background: var(--glass-fill-strong); color: var(--text); font-size: 16px; }
+.field:focus-visible { outline: 3px solid var(--sky-500); outline-offset: 1px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.chip { min-height: 40px; padding: 0 16px; border-radius: var(--radius-pill); border: 1px solid var(--glass-edge); background: var(--glass-fill-strong); color: var(--text-2); font-weight: 600; cursor: pointer; transition: background var(--dur) var(--ease-out); }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-contrast); border-color: transparent; }

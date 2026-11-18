@@ -4,6 +4,8 @@ import { FlagIcon, HomeIcon, RecordIcon, StatsIcon, UserIcon } from "./component
 import { Hoy } from "./screens/Hoy";
 import { Perfil } from "./screens/Perfil";
 import { Placeholder } from "./screens/Placeholder";
+import { Onboarding } from "./screens/Onboarding";
+import { useProfile } from "./lib/profile";
 
 const TABS: TabItem[] = [
   { to: "/", label: "Hoy", icon: <HomeIcon /> },
@@ -14,6 +16,9 @@ const TABS: TabItem[] = [
 ];
 
 export default function App() {
+  const { profile, loading } = useProfile();
+  if (loading) return null;
+  if (!profile) return <Onboarding />;
   return (
     <>
       <Routes>
