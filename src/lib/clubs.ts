@@ -51,3 +51,21 @@ export function sortHomeFirst(clubs: Club[], home: "CDMX" | "Querétaro" | "Otra
   const rank = (c: Club) => (c.city === home ? 0 : home === "CDMX" && c.city === "Estado de México" ? 1 : 2);
   return clubs.map((c, i) => ({ c, i })).sort((a, b) => rank(a.c) - rank(b.c) || a.i - b.i).map((x) => x.c);
 }
+
+// Plain-language answers a golfer cares about. Unknown never reads as yes.
+export type Access = { text: string; tone: "ok" | "no" | "maybe" };
+export const accessOf = (c: Club): Access =>
+  c.acceptsNonMembers === true ? { text: "Abierto al público", tone: "ok" }
+  : c.acceptsNonMembers === false ? { text: "Solo socios o invitados", tone: "no" }
+  : { text: "Acceso por confirmar", tone: "maybe" };
+
+// Prices not confirmed by the club itself are shown as approximate.
+export function priceText(c: Club): string {
+  if (c.priceFromMXN === null) return "Precio: pregunta al club";
+  return `Desde $${c.priceFromMXN.toLocaleString("es-MX")}${c.confidence === "alta" ? "" : " (aprox.)"}`;
+}
+
+const PRACTICE: Partial<Record<Amenity, string>> = { driving_range: "Driving range", putting_green: "Green de práctica", clases: "Clases" };
+const SERVICES: Partial<Record<Amenity, string>> = { carrito: "Carrito", caddie: "Caddie", renta_palos: "Renta de palos", restaurante: "Restaurante", tienda: "Tienda de golf" };
+export const practiceOf = (c: Club) => c.amenities.map((a) => PRACTICE[a]).filter(Boolean) as string[];
+export const servicesOf = (c: Club) => c.amenities.map((a) => SERVICES[a]).filter(Boolean) as string[];
