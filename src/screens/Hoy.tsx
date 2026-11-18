@@ -1,9 +1,17 @@
+import { useEffect, useState } from "react";
 import { GlassCard, StatRing } from "../components/glass";
+import { data } from "../lib/data";
+import { buildPracticePlan, type Drill } from "../lib/practicePlan";
+import { lossAreas } from "../lib/stats";
 
 import { useProfile } from "../lib/profile";
 
 export function Hoy() {
   const { profile } = useProfile();
+  const [drill, setDrill] = useState<Drill | null>(null);
+  useEffect(() => {
+    void data.getRounds().then((rs) => setDrill(buildPracticePlan({ loss: rs.length ? lossAreas(rs)[0] : null, faults: [] })[0] ?? null));
+  }, []);
   return (
     <main className="screen">
       <header className="stack">
@@ -22,8 +30,8 @@ export function Hoy() {
         <div className="row">
           <div className="stack">
             <div className="label-caption">Drill del día</div>
-            <h2>Graba tu primer swing</h2>
-            <span className="muted">Con tu análisis te damos un drill de 5 minutos.</span>
+            <h2>{drill ? "Práctica de hoy" : "Registra tu primera ronda"}</h2>
+            <span className="muted">{drill ? drill.text : "Con tus rondas te armamos un plan de práctica."}</span>
           </div>
           <StatRing value={0} max={3} label="esta semana" display="0/3" size={88} />
         </div>
