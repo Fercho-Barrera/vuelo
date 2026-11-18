@@ -1,40 +1,53 @@
-import { Card, GlassSwitch, PillSelector, SectionHeader } from "../components/glass";
-import { NOTIFICATION_CATEGORIES } from "../lib/notifications";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Card, ListRow, SectionHeader } from "../components/glass";
+import { FlagIcon, GearIcon } from "../components/icons";
+import { CLUBS } from "../lib/clubs";
+import { data } from "../lib/data";
+import { getFavorites } from "../lib/favorites";
 import { useProfile } from "../lib/profile";
+import { handicapEstimate, type Round } from "../lib/stats";
 
 export function Perfil() {
-  const { profile, save } = useProfile();
+  const { profile } = useProfile();
+  const [rounds, setRounds] = useState<Round[]>([]);
+  useEffect(() => { void data.getRounds().then(setRounds); }, []);
   if (!profile) return null;
-  const set = (patch: Partial<typeof profile>) => save({ ...profile, ...patch });
+
+  const hcp = handicapEstimate(rounds);
+  const favs = CLUBS.filter((c) => getFavorites().includes(c.id));
   return (
     <main className="screen">
-      <div className="stack" style={{ justifyItems: "center", textAlign: "center", gap: 10 }}>
+      <div className="topbar" style={{ justifyContent: "flex-end", marginRight: -10 }}>
+        <Link to="/perfil/ajustes" className="icon-btn" aria-label="Ajustes de la cuenta"><GearIcon /></Link>
+      </div>
+
+      <div className="stack" style={{ justifyItems: "center", textAlign: "center", gap: 10, marginTop: -8 }}>
         <div className="avatar avatar--lg" aria-hidden="true">{profile.name.trim().charAt(0).toUpperCase() || "G"}</div>
         <h1>{profile.name || "Golfista"}</h1>
         <span className="muted">{profile.city} · {profile.level === "principiante" ? "Principiante" : "Intermedio"}</span>
       </div>
 
-      <SectionHeader title="Tus datos" />
       <Card>
-        <div className="stack" style={{ gap: 12 }}>
-          <input className="field" aria-label="Nombre" value={profile.name} onChange={(e) => set({ name: e.target.value })} />
-          <PillSelector label="Ciudad" value={profile.city} onChange={(city) => set({ city })} options={[{ value: "CDMX", label: "CDMX" }, { value: "Querétaro", label: "Querétaro" }, { value: "Otra", label: "Otra" }]} />
-          <PillSelector label="Nivel" value={profile.level} onChange={(level) => set({ level })} options={[{ value: "principiante", label: "Principiante" }, { value: "intermedio", label: "Intermedio" }]} />
-          <input className="field" aria-label="Hándicap" inputMode="decimal" placeholder="Hándicap" value={profile.handicap ?? ""} onChange={(e) => set({ handicap: e.target.value === "" ? null : Number(e.target.value.replace(/[^0-9.]/g, "")) })} />
+        <div className="stat-trio">
+          <div><span className="num-big" style={{ fontSize: 30 }}>{rounds.length}</span><span className="label-caption">Rondas</span></div>
+          <div><span className="num-big" style={{ fontSize: 30 }}>{profile.handicap ?? "--"}</span><span className="label-caption">Hándicap</span></div>
+          <div><span className="num-big" style={{ fontSize: 30 }}>{hcp?.toFixed(1) ?? "--"}</span><span className="label-caption">Estimado</span></div>
         </div>
       </Card>
 
-      <SectionHeader title="Notificaciones" />
+      <SectionHeader title="Mi bolsa" />
       <Card>
-        <p className="muted" style={{ margin: "0 0 8px" }}>Pocas y que valgan la pena. Máximo 1 al día y 3 a la semana. Silencio de 22:00 a 08:00.</p>
-        <div className="stack">
-          {NOTIFICATION_CATEGORIES.map((c) => (
-            <div key={c.id} className="row" style={{ minHeight: 52 }}>
-              <span>{c.label}</span>
-              <GlassSwitch checked={profile.prefs[c.id]} onChange={(v) => set({ prefs: { ...profile.prefs, [c.id]: v } })} label={c.label} />
-            </div>
-          ))}
-        </div>
+        {profile.clubs.length > 0
+          ? <div className="chips">{profile.clubs.map((c) => <span key={c} className="chip" style={{ cursor: "default" }}>{c}</span>)}</div>
+          : <span className="muted">Aún no agregas palos.</span>}
+      </Card>
+
+      <SectionHeader title="Clubes favoritos" to="/clubes" cta="Ver clubes" />
+      <Card flush>
+        {favs.length > 0
+          ? favs.map((c) => <ListRow key={c.id} icon={<FlagIcon />} title={c.name} sub={c.city} />)
+          : <ListRow icon={<FlagIcon />} title="Sin favoritos" sub="Guarda un club desde su ficha." />}
       </Card>
     </main>
   );

@@ -67,7 +67,7 @@
 .ring__track { stroke: var(--surface-2); }
 .ring__value { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 700ms var(--ease-out); }
 .ring__label { position: absolute; text-align: center; line-height: 1.1; }
-.ring__label strong { display: block; font-size: 20px; letter-spacing: -0.02em; }
+.ring__label strong { font-family: var(--font-display); display: block; font-size: 20px; letter-spacing: -0.02em; }
 .ring__label span { font-size: 11px; color: var(--text-3); }
 
 /* Video player */
@@ -105,5 +105,5 @@ button.list-row, a.list-row { cursor: pointer; text-decoration: none; }
 
 /* Section header */
 .section-h { display: flex; align-items: baseline; justify-content: space-between; margin: var(--space-2) 0 0; }
-.section-h h2 { margin: 0; font-size: var(--fs-title); letter-spacing: -0.02em; }
+.section-h h2 { font-family: var(--font-display); font-optical-sizing: auto; margin: 0; font-size: var(--fs-title); letter-spacing: -0.02em; }
 .section-h a, .section-h button { color: var(--accent-strong); font-weight: 600; font-size: 15px; text-decoration: none; background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit; }
