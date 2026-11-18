@@ -1,3 +1,5 @@
+import type { Round } from "../stats";
+
 export type Level = "principiante" | "intermedio";
 export type City = "CDMX" | "Querétaro" | "Otra";
 
@@ -13,4 +15,6 @@ export type Profile = {
 export interface DataAdapter {
   getProfile(): Promise<Profile | null>;
   saveProfile(p: Profile): Promise<void>;
+  getRounds(): Promise<Round[]>;
+  saveRound(r: Round): Promise<void>;
 }

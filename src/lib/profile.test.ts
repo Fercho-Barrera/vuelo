@@ -14,3 +14,15 @@ describe("mock adapter", () => {
     expect(await mockAdapter.getProfile()).toEqual(p);
   });
 });
+
+describe("mock rounds", () => {
+  beforeEach(() => localStorage.clear());
+  it("saves and replaces a round by id", async () => {
+    const r = { id: "r1", courseName: "A", date: "2026-11-01", holes: [] };
+    await mockAdapter.saveRound(r);
+    await mockAdapter.saveRound({ ...r, courseName: "B" });
+    const all = await mockAdapter.getRounds();
+    expect(all).toHaveLength(1);
+    expect(all[0].courseName).toBe("B");
+  });
+});
