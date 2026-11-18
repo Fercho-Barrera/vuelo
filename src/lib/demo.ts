@@ -1,3 +1,4 @@
+import { CLUBS } from "./clubs";
 import { defaultPrefs } from "./notifications";
 import type { Hole, Round } from "./stats";
 
@@ -18,5 +19,6 @@ export function seedDemo() {
     { id: "d3", courseName: "Club de Golf México", date: "2026-10-19", holes: course([4,5,3,6,4,5,4,6,5,4,5,4,6,4,5,3,6,5], [2,2,1,2,2,3,2,2,2,2,2,2,3,2,2,2,2,2]) },
     { id: "d4", courseName: "Parres Club de Golf", date: "2026-10-05", holes: course([6,5,4,7,5,5,4,6,5,5,5,4,6,5,6,4,6,5], [3,2,2,3,2,3,2,2,3,2,3,2,2,2,3,2,3,2]) },
   ];
+  localStorage.setItem("vuelo.favorites.v1", JSON.stringify(CLUBS.slice(0, 2).map((c) => c.id)));
   localStorage.setItem("vuelo.rounds.v1", JSON.stringify(rounds));
 }

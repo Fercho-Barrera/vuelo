@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import { GlassTabBar, type TabItem } from "./components/glass";
 import { FlagIcon, HomeIcon, RecordIcon, StatsIcon, UserIcon } from "./components/icons";
 import { Hoy } from "./screens/Hoy";
+import { Ajustes } from "./screens/Ajustes";
 import { Perfil } from "./screens/Perfil";
 import { Grabar } from "./screens/Grabar";
 import { Stats } from "./screens/Stats";
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/stats/nueva" element={<NuevaRonda />} />
         <Route path="/clubes" element={<Clubes />} />
         <Route path="/perfil" element={<Perfil />} />
+        <Route path="/perfil/ajustes" element={<Ajustes />} />
       </Routes>
       <GlassTabBar items={TABS} />
     </>

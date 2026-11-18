@@ -50,6 +50,8 @@
   --gutter: 20px;
 
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", Roboto, system-ui, sans-serif;
+  /* Display face for headlines and numerals (optical size axis). Body stays on the system font: Apple's guidance is to override it only with a reason. */
+  --font-display: "Bricolage Grotesque Variable", var(--font);
   --fs-caption: 13px; --fs-body: 16px; --fs-title: 20px; --fs-large: 32px; --fs-hero: 64px;
 
   --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
