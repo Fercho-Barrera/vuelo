@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Button, GlassSwitch, PillSelector } from "../components/glass";
+import { BAG } from "../lib/bag";
 import { NOTIFICATION_CATEGORIES, defaultPrefs } from "../lib/notifications";
 import { useProfile } from "../lib/profile";
 import type { City, Level } from "../lib/data";
 
-const BAG = ["Driver", "Madera 3", "Híbrido", "Hierro 5", "Hierro 7", "Hierro 9", "Pitching", "Sand", "Putter"];
 const STEPS = 4;
 
 export function Onboarding() {

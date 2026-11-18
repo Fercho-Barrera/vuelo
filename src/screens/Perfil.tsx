@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Card, ListRow, SectionHeader } from "../components/glass";
-import { FlagIcon, GearIcon } from "../components/icons";
+import { Avatar, Card, ListRow, SectionHeader } from "../components/glass";
+import { CameraIcon, FlagIcon, GearIcon } from "../components/icons";
+import { BAG } from "../lib/bag";
+import { fileToAvatarDataUrl } from "../lib/photo";
 import { CLUBS } from "../lib/clubs";
 import { data } from "../lib/data";
 import { getFavorites } from "../lib/favorites";
@@ -9,11 +11,18 @@ import { useProfile } from "../lib/profile";
 import { handicapEstimate, type Round } from "../lib/stats";
 
 export function Perfil() {
-  const { profile } = useProfile();
+  const { profile, save } = useProfile();
+  const [photoError, setPhotoError] = useState(false);
   const [rounds, setRounds] = useState<Round[]>([]);
   useEffect(() => { void data.getRounds().then(setRounds); }, []);
   if (!profile) return null;
 
+  const toggleClub = (c: string) => save({ ...profile, clubs: profile.clubs.includes(c) ? profile.clubs.filter((x) => x !== c) : [...profile.clubs, c] });
+  const pickPhoto = async (file: File | undefined) => {
+    if (!file) return;
+    setPhotoError(false);
+    try { await save({ ...profile, photo: await fileToAvatarDataUrl(file) }); } catch { setPhotoError(true); }
+  };
   const hcp = handicapEstimate(rounds);
   const favs = CLUBS.filter((c) => getFavorites().includes(c.id));
   return (
@@ -23,9 +32,14 @@ export function Perfil() {
       </div>
 
       <div className="stack" style={{ justifyItems: "center", textAlign: "center", gap: 10, marginTop: -8 }}>
-        <div className="avatar avatar--lg" aria-hidden="true">{profile.name.trim().charAt(0).toUpperCase() || "G"}</div>
+        <label className="avatar-pick" aria-label="Cambiar foto de perfil">
+          <Avatar name={profile.name} photo={profile.photo} large />
+          <span className="avatar-pick__badge"><CameraIcon /></span>
+          <input type="file" accept="image/*" onChange={(e) => { void pickPhoto(e.target.files?.[0]); e.target.value = ""; }} />
+        </label>
         <h1>{profile.name || "Golfista"}</h1>
         <span className="muted">{profile.city} · {profile.level === "principiante" ? "Principiante" : "Intermedio"}</span>
+        {photoError && <span style={{ color: "var(--danger)" }}>No pudimos usar esa foto. Prueba con otra.</span>}
       </div>
 
       <Card>
@@ -38,9 +52,10 @@ export function Perfil() {
 
       <SectionHeader title="Mi bolsa" />
       <Card>
-        {profile.clubs.length > 0
-          ? <div className="chips">{profile.clubs.map((c) => <span key={c} className="chip" style={{ cursor: "default" }}>{c}</span>)}</div>
-          : <span className="muted">Aún no agregas palos.</span>}
+        <p className="muted" style={{ margin: "0 0 12px" }}>Toca para agregar o quitar palos.</p>
+        <div className="chips">
+          {BAG.map((c) => <button key={c} type="button" className="chip" aria-pressed={profile.clubs.includes(c)} onClick={() => toggleClub(c)}>{c}</button>)}
+        </div>
       </Card>
 
       <SectionHeader title="Clubes favoritos" to="/clubes" cta="Ver clubes" />

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ButtonLink, Card, ListRow, SectionHeader } from "../components/glass";
 import { PinIcon } from "../components/icons";
 import { data } from "../lib/data";
@@ -9,6 +10,7 @@ const sign = (n: number) => (n > 0 ? `+${n}` : String(n));
 const AREA: Record<string, string> = { drive: "Salida", approach: "Approach", putt: "Putt", penalidades: "Penalidades" };
 
 export function Stats() {
+  const nav = useNavigate();
   const [rounds, setRounds] = useState<Round[]>([]);
   useEffect(() => { void data.getRounds().then(setRounds); }, []);
   const sorted = rounds.slice().sort((a, b) => b.date.localeCompare(a.date));
@@ -50,7 +52,7 @@ export function Stats() {
           <SectionHeader title="Historial" />
           <Card flush>
             {sorted.map((r) => { const s = summarize(r); return (
-              <ListRow key={r.id} icon={<PinIcon />} title={r.courseName} sub={`${fmtDate(r.date)} · ${s.putts} putts`} trail={<>{s.total} <span className="muted" style={{ fontWeight: 600 }}>{sign(s.toPar)}</span></>} />
+              <ListRow key={r.id} icon={<PinIcon />} title={r.courseName} sub={`${fmtDate(r.date)} · ${s.putts} putts`} trail={<>{s.total} <span className="muted" style={{ fontWeight: 600 }}>{sign(s.toPar)}</span></>} onClick={() => nav(`/stats/ronda/${r.id}`)} />
             ); })}
           </Card>
           <span className="muted">El hándicap es un estimado: no usa rating ni slope del campo.</span>

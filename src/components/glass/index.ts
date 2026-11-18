@@ -8,6 +8,7 @@ export { PillSelector } from "./PillSelector";
 export { StatRing } from "./StatRing";
 export { VideoPlayer } from "./VideoPlayer";
 export { Card } from "./Card";
+export { Avatar } from "./Avatar";
 export { Button, ButtonLink, ButtonAnchor } from "./Button";
 export { ListRow } from "./ListRow";
 export { Actions } from "./Actions";

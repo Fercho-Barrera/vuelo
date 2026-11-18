@@ -25,3 +25,18 @@ describe("sortByDistance", () => {
 describe("waLink", () => {
   it("keeps digits only", () => expect(waLink("+52 55 1234-5678")).toBe("https://wa.me/525512345678"));
 });
+
+import { sortHomeFirst } from "./clubs";
+describe("sortHomeFirst", () => {
+  const mk = (id: string, city: Club["city"]): Club => ({ ...base, id, city });
+  const list = [mk("q1", "Querétaro"), mk("m1", "Estado de México"), mk("c1", "CDMX"), mk("c2", "CDMX")];
+  it("puts the home city first, then its metro area, then the rest, keeping order inside groups", () => {
+    expect(sortHomeFirst(list, "CDMX").map((c) => c.id)).toEqual(["c1", "c2", "m1", "q1"]);
+  });
+  it("puts Querétaro first for a Querétaro player", () => {
+    expect(sortHomeFirst(list, "Querétaro").map((c) => c.id)[0]).toBe("q1");
+  });
+  it("leaves the list alone for Otra", () => {
+    expect(sortHomeFirst(list, "Otra").map((c) => c.id)).toEqual(["q1", "m1", "c1", "c2"]);
+  });
+});
