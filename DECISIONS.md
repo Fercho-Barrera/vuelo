@@ -10,3 +10,7 @@ Format: date, decision, reason.
 - 2026-11-17 Liquid Glass on web is approximated with `backdrop-filter`, layered borders and specular highlights, following the `apple-hig` materials rules: glass only for controls and navigation floating over content, standard materials for the content layer, frostier fallback under reduced transparency.
 - 2026-11-17 `main` protection: private repos on a free GitHub plan cannot enforce branch protection. Convention instead: never commit to `main`, merge through PRs.
 - 2026-11-17 Brief is kept in Spanish at `docs/brief.es.md`; all other docs are English.
+- 2026-11-18 Offer push copy must not include prices. Brief section 8.1 example 7 shows prices ("$850 en vez de $1,200") but section 8.0 forbids prices on the lock screen. We follow 8.0: the rules engine blocks any push whose text has an amount, so offers say "Hay un tee time de última hora cerca de ti" and the price lives behind the deep link.
+- 2026-11-18 Club map: no embedded map until a map key exists (MapKit JS or Google Maps). The club sheet opens the native map app by coordinates or address instead.
+- 2026-11-18 Club reviews (brief 4.5) need the backend and moderation, so they are not in the club sheet yet.
+- 2026-11-18 Handicap is an estimate: best 8 of the last 20 score-minus-par differentials times 0.96, because we have no course rating or slope. The UI says "estimado" and "aprox.".
