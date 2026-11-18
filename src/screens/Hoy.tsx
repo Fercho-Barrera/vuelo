@@ -1,11 +1,14 @@
 import { GlassCard, StatRing } from "../components/glass";
 
+import { useProfile } from "../lib/profile";
+
 export function Hoy() {
+  const { profile } = useProfile();
   return (
     <main className="screen">
       <header className="stack">
         <span className="label-caption">Hoy</span>
-        <h1>Buen día, golfista</h1>
+        <h1>Buen día, {profile?.name ?? "golfista"}</h1>
         <span className="muted">Aquí verás tu próximo tee time y tu práctica del día.</span>
       </header>
 
