@@ -97,4 +97,10 @@ label.avatar-pick input { position: absolute; inset: 0; opacity: 0; cursor: poin
 .club-card__foot { border-top: 1px solid var(--hairline); padding-top: 12px; }
 .club-card__go { width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: var(--ink-contrast); display: grid; place-items: center; }
 .club-card__go svg { width: 18px; height: 18px; }
+.badge { justify-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 700; }
+.badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.badge--ok { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent-strong); }
+.badge--no { background: var(--surface-2); color: var(--text-2); }
+.badge--maybe { background: color-mix(in srgb, var(--warn) 20%, transparent); color: #9a6200; }
+@media (prefers-color-scheme: dark) { .badge--maybe { color: var(--warn); } }
 .tag { padding: 4px 10px; border-radius: var(--radius-pill); background: var(--raised); font-size: 12px; font-weight: 600; color: var(--text-2); }

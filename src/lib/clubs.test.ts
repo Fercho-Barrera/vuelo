@@ -40,3 +40,22 @@ describe("sortHomeFirst", () => {
     expect(sortHomeFirst(list, "Otra").map((c) => c.id)).toEqual(["q1", "m1", "c1", "c2"]);
   });
 });
+
+import { accessOf, practiceOf, priceText, servicesOf } from "./clubs";
+describe("plain-language helpers", () => {
+  it("never turns unknown access into a yes", () => {
+    expect(accessOf({ ...base, acceptsNonMembers: null }).tone).toBe("maybe");
+    expect(accessOf({ ...base, acceptsNonMembers: true }).text).toBe("Abierto al público");
+    expect(accessOf({ ...base, acceptsNonMembers: false }).tone).toBe("no");
+  });
+  it("marks unconfirmed prices as approximate and missing ones as ask the club", () => {
+    expect(priceText({ ...base, priceFromMXN: 1500, confidence: "media" })).toBe("Desde $1,500 (aprox.)");
+    expect(priceText({ ...base, priceFromMXN: 1500, confidence: "alta" })).toBe("Desde $1,500");
+    expect(priceText({ ...base, priceFromMXN: null })).toBe("Precio: pregunta al club");
+  });
+  it("splits practice facilities from services", () => {
+    const c = { ...base, amenities: ["driving_range", "restaurante", "putting_green", "caddie"] as Club["amenities"] };
+    expect(practiceOf(c)).toEqual(["Driving range", "Green de práctica"]);
+    expect(servicesOf(c)).toEqual(["Restaurante", "Caddie"]);
+  });
+});
