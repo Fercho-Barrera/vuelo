@@ -14,3 +14,5 @@ Format: date, decision, reason.
 - 2026-11-18 Club map: no embedded map until a map key exists (MapKit JS or Google Maps). The club sheet opens the native map app by coordinates or address instead.
 - 2026-11-18 Club reviews (brief 4.5) need the backend and moderation, so they are not in the club sheet yet.
 - 2026-11-18 Handicap is an estimate: best 8 of the last 20 score-minus-par differentials times 0.96, because we have no course rating or slope. The UI says "estimado" and "aprox.".
+- 2026-11-18 Front redesigned on the owner's request (no literal sun; learn from Revolut and Speechify). Content now sits on flat solid cards with big bold numerals, round-icon list rows, a dark green hero card and pill buttons; ink (near black) is the primary button, green is the only accent. Liquid Glass stays only on the floating tab bar, sheets and video controls, as `apple-hig` recommends (no glass in the content layer). Fonts: system SF Pro stack, heavy weights, tight tracking. No web font bundled yet.
+- 2026-11-18 `?demo=1` seeds sample profile and rounds in development only (`import.meta.env.DEV`), so screens can be reviewed with content. It is not in production builds.

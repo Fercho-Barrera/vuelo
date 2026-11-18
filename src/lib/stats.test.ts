@@ -35,3 +35,16 @@ describe("lossAreas", () => {
     expect(lossAreas([round("p", holes)])[0].area).toBe("putt");
   });
 });
+
+import { overview } from "./stats";
+describe("overview", () => {
+  it("is null with no rounds", () => expect(overview([])).toBeNull());
+  it("averages across rounds", () => {
+    const a = round("a", [hole(1, { score: 4, putts: 2 })]);
+    const b = round("b", [hole(1, { score: 6, putts: 3 })]);
+    const o = overview([a, b])!;
+    expect(o.avgScore).toBe(5);
+    expect(o.puttsPerHole).toBe(2.5);
+    expect(o.rounds).toBe(2);
+  });
+});

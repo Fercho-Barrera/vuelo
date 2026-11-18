@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GlassButton, GlassCard, GlassSwitch, PillSelector } from "../components/glass";
+import { Button, GlassSwitch, PillSelector } from "../components/glass";
 import { NOTIFICATION_CATEGORIES, defaultPrefs } from "../lib/notifications";
 import { useProfile } from "../lib/profile";
 import type { City, Level } from "../lib/data";
@@ -24,16 +24,16 @@ export function Onboarding() {
 
   return (
     <main className="screen">
-      <span className="label-caption">Paso {step + 1} de {STEPS}</span>
+      <div className="progress" aria-label={`Paso ${step + 1} de ${STEPS}`}>{Array.from({ length: STEPS }, (_, i) => <span key={i} data-on={i <= step} />)}</div>
       {step === 0 && (
-        <GlassCard>
-          <h1>Bienvenido a Vuelo</h1>
-          <p className="muted">Tu coach de golf en el bolsillo. ¿Cómo te llamas?</p>
+        <div className="stack" style={{ gap: 12 }}>
+          <h1 style={{ fontSize: 40 }}>Tu coach de golf en el bolsillo</h1>
+          <p className="muted" style={{ margin: 0 }}>Bienvenido a Vuelo. ¿Cómo te llamas?</p>
           <input className="field" aria-label="Nombre" placeholder="Tu nombre" value={name} onChange={(e) => setName(e.target.value)} autoComplete="given-name" />
-        </GlassCard>
+        </div>
       )}
       {step === 1 && (
-        <GlassCard>
+        <div className="stack" style={{ gap: 12 }}>
           <h2>Tu golf</h2>
           <div className="stack" style={{ marginTop: 12 }}>
             <span className="label-caption">Ciudad</span>
@@ -43,10 +43,10 @@ export function Onboarding() {
             <span className="label-caption" style={{ marginTop: 8 }}>Hándicap (opcional)</span>
             <input className="field" aria-label="Hándicap" inputMode="decimal" placeholder="Ej. 24" value={handicap} onChange={(e) => setHandicap(e.target.value.replace(/[^0-9.]/g, ""))} />
           </div>
-        </GlassCard>
+        </div>
       )}
       {step === 2 && (
-        <GlassCard>
+        <div className="stack" style={{ gap: 12 }}>
           <h2>Tus palos</h2>
           <p className="muted">Con esto calculamos tus distancias reales por palo.</p>
           <div className="chips">
@@ -54,10 +54,10 @@ export function Onboarding() {
               <button key={c} type="button" className="chip" aria-pressed={clubs.includes(c)} onClick={() => toggleClub(c)}>{c}</button>
             ))}
           </div>
-        </GlassCard>
+        </div>
       )}
       {step === 3 && (
-        <GlassCard>
+        <div className="stack" style={{ gap: 12 }}>
           <h2>Notificaciones</h2>
           <p className="muted">Casi todo empieza apagado. Máximo 1 al día y 3 a la semana.</p>
           <div className="stack">
@@ -68,14 +68,14 @@ export function Onboarding() {
               </div>
             ))}
           </div>
-        </GlassCard>
+        </div>
       )}
       <div className="row">
-        <GlassButton onClick={() => setStep((s) => s - 1)} disabled={step === 0} style={{ visibility: step === 0 ? "hidden" : "visible" }}>Atrás</GlassButton>
+        <Button onClick={() => setStep((s) => s - 1)} style={{ visibility: step === 0 ? "hidden" : "visible" }}>Atrás</Button>
         {step < STEPS - 1 ? (
-          <GlassButton primary onClick={() => setStep((s) => s + 1)} disabled={!canNext}>Siguiente</GlassButton>
+          <Button variant="primary" onClick={() => setStep((s) => s + 1)} disabled={!canNext}>Siguiente</Button>
         ) : (
-          <GlassButton primary onClick={finish}>Empezar</GlassButton>
+          <Button variant="primary" onClick={finish}>Empezar</Button>
         )}
       </div>
     </main>

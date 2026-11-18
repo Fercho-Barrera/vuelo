@@ -3,7 +3,7 @@ import { GlassTabBar, type TabItem } from "./components/glass";
 import { FlagIcon, HomeIcon, RecordIcon, StatsIcon, UserIcon } from "./components/icons";
 import { Hoy } from "./screens/Hoy";
 import { Perfil } from "./screens/Perfil";
-import { Placeholder } from "./screens/Placeholder";
+import { Grabar } from "./screens/Grabar";
 import { Stats } from "./screens/Stats";
 import { NuevaRonda } from "./screens/NuevaRonda";
 import { Clubes } from "./screens/Clubes";
@@ -26,7 +26,7 @@ export default function App() {
     <>
       <Routes>
         <Route path="/" element={<Hoy />} />
-        <Route path="/grabar" element={<Placeholder title="Grabar" note="Aquí grabarás tu swing y tu bola." />} />
+        <Route path="/grabar" element={<Grabar />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/stats/nueva" element={<NuevaRonda />} />
         <Route path="/clubes" element={<Clubes />} />

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GlassButton, GlassCard, PillSelector } from "../components/glass";
+import { Button, Card, PillSelector } from "../components/glass";
 import { data } from "../lib/data";
 import type { Fairway, Hole } from "../lib/stats";
 
@@ -42,10 +42,10 @@ export function NuevaRonda() {
     return (
       <main className="screen">
         <h1>Nueva ronda</h1>
-        <GlassCard>
+        <Card>
           <input className="field" aria-label="Campo" placeholder="¿En qué campo juegas?" value={course} onChange={(e) => setCourse(e.target.value)} />
-        </GlassCard>
-        <GlassButton primary block onClick={() => setStarted(true)}>Empezar</GlassButton>
+        </Card>
+        <Button variant="primary" block onClick={() => setStarted(true)}>Empezar</Button>
       </main>
     );
   }
@@ -53,16 +53,16 @@ export function NuevaRonda() {
     <main className="screen">
       <div className="row">
         <h1>Hoyo {h.number}</h1>
-        <span className="muted">{course.trim() || "Ronda"}</span>
+        <span className="muted">{h.number} / 18</span>
       </div>
-      <GlassCard>
+      <Card>
         <Stepper label="Par" value={h.par} min={3} onChange={(par) => set({ par, fairway: par === 3 ? null : (h.fairway ?? "centro") })} />
         <Stepper label="Golpes" value={h.score} min={1} onChange={(score) => set({ score })} />
         <Stepper label="Putts" value={h.putts} onChange={(putts) => set({ putts })} />
         <Stepper label="Penalidades" value={h.penalties} onChange={(penalties) => set({ penalties })} />
-      </GlassCard>
-      <GlassCard tight>
-        <div className="stack">
+      </Card>
+      <Card>
+        <div className="stack" style={{ gap: 12 }}>
           {h.par !== 3 && (
             <>
               <span className="label-caption">Fairway</span>
@@ -71,8 +71,8 @@ export function NuevaRonda() {
           )}
           <button type="button" className="chip" aria-pressed={h.gir} onClick={() => set({ gir: !h.gir })}>Green en regulación</button>
         </div>
-      </GlassCard>
-      <GlassButton primary block onClick={next}>{h.number === 18 ? "Terminar ronda" : "Siguiente hoyo"}</GlassButton>
+      </Card>
+      <Button variant="primary" block onClick={next}>{h.number === 18 ? "Terminar ronda" : "Siguiente hoyo"}</Button>
     </main>
   );
 }
