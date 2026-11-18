@@ -10,6 +10,7 @@ export type Profile = {
   handicap: number | null;
   clubs: string[]; // clubs in the bag, e.g. "Driver", "7i"
   prefs: Record<string, boolean>; // notification categories
+  photo?: string | null; // avatar as a small data URL
 };
 
 export interface DataAdapter {

@@ -43,3 +43,11 @@ export const mapsLink = (c: Club) =>
 
 const loaded = import.meta.glob<Club[]>("../data/clubs.json", { eager: true, import: "default" });
 export const CLUBS: Club[] = Object.values(loaded)[0] ?? [];
+
+// Clubs in the player's home city first, then the same metro area (Estado de México counts with CDMX),
+// then the rest. The sort is stable, so the original order holds inside each group.
+export function sortHomeFirst(clubs: Club[], home: "CDMX" | "Querétaro" | "Otra"): Club[] {
+  if (home === "Otra") return clubs;
+  const rank = (c: Club) => (c.city === home ? 0 : home === "CDMX" && c.city === "Estado de México" ? 1 : 2);
+  return clubs.map((c, i) => ({ c, i })).sort((a, b) => rank(a.c) - rank(b.c) || a.i - b.i).map((x) => x.c);
+}

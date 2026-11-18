@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Actions, Card, ListRow, SectionHeader } from "../components/glass";
+import { Link, useNavigate } from "react-router-dom";
+import { Actions, Avatar, Card, ListRow, SectionHeader } from "../components/glass";
 import { CalendarIcon, FlagIcon, ListIcon, PinIcon, PlusIcon, TargetIcon, VideoIcon } from "../components/icons";
 import { data } from "../lib/data";
 import { buildPracticePlan } from "../lib/practicePlan";
@@ -11,6 +12,7 @@ const sign = (n: number) => (n > 0 ? `+${n}` : String(n));
 
 export function Hoy() {
   const { profile } = useProfile();
+  const nav = useNavigate();
   const [rounds, setRounds] = useState<Round[]>([]);
   useEffect(() => { void data.getRounds().then(setRounds); }, []);
 
@@ -18,16 +20,15 @@ export function Hoy() {
   const hcp = handicapEstimate(rounds);
   const plan = buildPracticePlan({ loss: rounds.length ? lossAreas(rounds)[0] : null, faults: [] });
   const last = sorted[0] ? summarize(sorted[0]) : null;
-  const initial = (profile?.name ?? "G").trim().charAt(0).toUpperCase();
 
   return (
-    <main className="screen">
+    <main className="screen screen--no-tabs">
       <div className="topbar">
         <div className="stack" style={{ gap: 2 }}>
           <span className="label-caption">Hola</span>
           <h1>{profile?.name ?? "Golfista"}</h1>
         </div>
-        <div className="avatar" aria-hidden="true">{initial}</div>
+        <Link to="/perfil" className="avatar-link" aria-label="Ir a mi perfil"><Avatar name={profile?.name ?? ""} photo={profile?.photo} /></Link>
       </div>
 
       <Card hero>
@@ -62,7 +63,7 @@ export function Hoy() {
           <SectionHeader title="Últimas rondas" to="/stats" cta="Ver todo" />
           <Card flush>
             {sorted.slice(0, 3).map((r) => { const s = summarize(r); return (
-              <ListRow key={r.id} icon={<PinIcon />} title={r.courseName} sub={fmtDate(r.date)} trail={<>{s.total} <span className="muted" style={{ fontWeight: 600 }}>{sign(s.toPar)}</span></>} />
+              <ListRow key={r.id} icon={<PinIcon />} title={r.courseName} sub={fmtDate(r.date)} trail={<>{s.total} <span className="muted" style={{ fontWeight: 600 }}>{sign(s.toPar)}</span></>} onClick={() => nav(`/stats/ronda/${r.id}`)} />
             ); })}
           </Card>
         </>

@@ -1,13 +1,16 @@
 import { useMemo, useState } from "react";
-import { Button, ButtonAnchor, Card, GlassSheet, ListRow, PillSelector } from "../components/glass";
-import { FlagIcon } from "../components/icons";
-import { CLUBS, filterClubs, mapsLink, noFilters, sortByDistance, waLink, type Club, type Filters } from "../lib/clubs";
+import { Button, ButtonAnchor, Card, GlassSheet, PillSelector } from "../components/glass";
+import { ChevronIcon, PinIcon } from "../components/icons";
+import { CLUBS, filterClubs, mapsLink, noFilters, sortByDistance, sortHomeFirst, waLink, type Club, type Filters } from "../lib/clubs";
+import { useProfile } from "../lib/profile";
+import { distanceKm } from "../lib/clubs";
 import { getFavorites, toggleFavorite } from "../lib/favorites";
 
 const AMENITY: Record<string, string> = { driving_range: "Driving range", putting_green: "Putting green", restaurante: "Restaurante", carrito: "Carrito", caddie: "Caddie", renta_palos: "Renta de palos", clases: "Clases", tienda: "Tienda" };
 const mxn = (n: number) => `$${n.toLocaleString("es-MX")}`;
 
 export function Clubes() {
+  const { profile } = useProfile();
   const [f, setF] = useState<Filters>(noFilters);
   const [favs, setFavs] = useState<string[]>(getFavorites);
   const [onlyFavs, setOnlyFavs] = useState(false);
@@ -18,8 +21,8 @@ export function Clubes() {
   const list = useMemo(() => {
     let l = filterClubs(CLUBS, f);
     if (onlyFavs) l = l.filter((c) => favs.includes(c.id));
-    return pos ? sortByDistance(l, pos.lat, pos.lng) : l;
-  }, [f, onlyFavs, favs, pos]);
+    return pos ? sortByDistance(l, pos.lat, pos.lng) : sortHomeFirst(l, profile?.city ?? "Otra");
+  }, [f, onlyFavs, favs, pos, profile?.city]);
 
   const locate = () => {
     setGeoError(false);
@@ -42,15 +45,31 @@ export function Clubes() {
       </div>
       {geoError && <span className="muted">No pudimos ubicarte. Revisa el permiso de ubicación.</span>}
       {list.length === 0 && <Card><p className="muted" style={{ margin: 0 }}>{CLUBS.length === 0 ? "Aún no hay clubes cargados." : "Ningún club coincide con tus filtros."}</p></Card>}
-      {list.length > 0 && (
-        <Card flush>
-          {list.map((c) => (
-            <ListRow key={c.id} icon={<FlagIcon />} accent={favs.includes(c.id)} title={c.name}
-              sub={`${c.city}${c.holes ? ` · ${c.holes} hoyos` : ""}${c.acceptsNonMembers === true ? " · Acepta no socios" : c.acceptsNonMembers === false ? " · Solo socios" : ""}`}
-              trail={c.priceFromMXN !== null ? mxn(c.priceFromMXN) : ""} onClick={() => setOpen(c)} />
-          ))}
-        </Card>
-      )}
+      {list.map((c) => {
+        const km = pos && c.lat !== null && c.lng !== null ? distanceKm(pos.lat, pos.lng, c.lat, c.lng) : null;
+        const tags = [
+          c.holes ? `${c.holes} hoyos` : null,
+          c.acceptsNonMembers === true ? "Acepta no socios" : c.acceptsNonMembers === false ? "Solo socios" : null,
+          c.beginnerFriendly === true ? "Para principiantes" : null,
+        ].filter(Boolean) as string[];
+        return (
+          <Card key={c.id} className="club-card" role="button" tabIndex={0} onClick={() => setOpen(c)} onKeyDown={(e) => e.key === "Enter" && setOpen(c)}>
+            <div className="row" style={{ alignItems: "flex-start" }}>
+              <div className="stack" style={{ gap: 4, minWidth: 0 }}>
+                <h2 style={{ fontSize: 19 }}>{c.name}</h2>
+                <span className="label-caption" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><span className="club-card__pin"><PinIcon /></span>{c.city}{km !== null ? ` · a ${Math.round(km)} km` : ""}</span>
+              </div>
+              {favs.includes(c.id) && <span className="club-card__star" aria-label="Favorito">★</span>}
+            </div>
+            {tags.length > 0 && <div className="chips">{tags.map((t) => <span key={t} className="tag">{t}</span>)}</div>}
+            {c.amenities.length > 0 && <span className="label-caption">{c.amenities.slice(0, 3).map((a) => AMENITY[a]).join(" · ")}{c.amenities.length > 3 ? ` · +${c.amenities.length - 3}` : ""}</span>}
+            <div className="row club-card__foot">
+              {c.priceFromMXN !== null ? <span><span className="label-caption">Desde </span><strong>{mxn(c.priceFromMXN)}</strong></span> : <span className="label-caption">Precio: consulta al club</span>}
+              <span className="club-card__go"><ChevronIcon /></span>
+            </div>
+          </Card>
+        );
+      })}
       <GlassSheet open={open !== null} onClose={() => setOpen(null)} title={open?.name ?? ""}>
         {open && (
           <div className="stack">
