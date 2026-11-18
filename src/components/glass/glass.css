@@ -1,0 +1,125 @@
+/* Base glass surface: blur, tint, soft edge, specular highlight on the top-left. */
+.glass {
+  position: relative;
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  isolation: isolate;
+}
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--glass-highlight);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: -1;
+}
+.glass--strong { background: var(--glass-fill-strong); }
+
+/* GlassCard */
+.glass-card { border-radius: var(--radius-lg); padding: var(--space-4); color: var(--text); }
+.glass-card--tight { padding: var(--space-3); border-radius: var(--radius-md); }
+
+/* GlassButton */
+.glass-button {
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--fs-body);
+  min-height: 48px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-pill);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--spring), box-shadow var(--dur) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+}
+.glass-button:active { transform: scale(0.96); }
+.glass-button--primary {
+  background: linear-gradient(180deg, var(--green-300) -40%, var(--accent) 60%);
+  color: var(--accent-contrast);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+.glass-button--block { display: flex; width: 100%; }
+.glass-button:focus-visible, .pill:focus-visible, .tab:focus-visible { outline: 3px solid var(--sky-500); outline-offset: 2px; }
+
+/* GlassTabBar: floating capsule at the bottom, content scrolls under it */
+.tabbar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--safe-bottom) + 12px);
+  width: min(calc(100% - 2 * var(--gutter)), 420px);
+  display: flex;
+  padding: 6px;
+  border-radius: var(--radius-pill);
+  z-index: 20;
+}
+.tab {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 8px 4px;
+  border-radius: var(--radius-pill);
+  color: var(--text-3);
+  text-decoration: none;
+  font-size: 11px; font-weight: 600;
+  transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.tab svg { width: 24px; height: 24px; }
+.tab[aria-current="page"] { color: var(--accent-strong); background: var(--glass-tint); }
+
+/* GlassSheet */
+.sheet-backdrop {
+  position: fixed; inset: 0; background: rgba(18, 32, 26, 0.32);
+  opacity: 0; pointer-events: none; transition: opacity var(--dur) var(--ease-out); z-index: 30;
+}
+.sheet-backdrop[data-open="true"] { opacity: 1; pointer-events: auto; }
+.sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 31;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: var(--space-3) var(--gutter) calc(var(--safe-bottom) + var(--space-5));
+  transform: translateY(105%);
+  transition: transform var(--dur) var(--spring);
+  max-height: 85dvh; overflow: auto;
+}
+.sheet[data-open="true"] { transform: translateY(0); }
+.sheet__grip { width: 40px; height: 5px; border-radius: 3px; background: var(--hairline); margin: 0 auto var(--space-3); }
+
+/* PillSelector */
+.pills { display: inline-flex; padding: 4px; border-radius: var(--radius-pill); gap: 2px; }
+.pill {
+  font: inherit; font-weight: 600; font-size: 14px;
+  border: 0; background: transparent; color: var(--text-2);
+  padding: 8px 16px; min-height: 36px; border-radius: var(--radius-pill); cursor: pointer;
+  transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
+}
+.pill[aria-checked="true"] { background: var(--surface); color: var(--accent-strong); box-shadow: 0 1px 4px rgba(23, 72, 42, 0.18); }
+
+/* StatRing */
+.ring { position: relative; display: inline-grid; place-items: center; }
+.ring svg { transform: rotate(-90deg); }
+.ring__track { stroke: var(--hairline); }
+.ring__value { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 700ms var(--ease-out); }
+.ring__label { position: absolute; text-align: center; line-height: 1.1; }
+.ring__label strong { display: block; font-size: 22px; }
+.ring__label span { font-size: var(--fs-caption); color: var(--text-3); }
+
+/* VideoPlayer */
+.vp { position: relative; border-radius: var(--radius-md); overflow: hidden; background: #000; }
+.vp video { width: 100%; display: block; max-height: 60dvh; background: #000; }
+.vp__controls { position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: var(--radius-pill); }
+.vp__controls button { font: inherit; font-weight: 700; border: 0; background: transparent; color: var(--text); min-width: 44px; min-height: 36px; cursor: pointer; border-radius: var(--radius-pill); }
+.vp__controls input[type="range"] { flex: 1; accent-color: var(--accent); }
+
+/* GlassSwitch: 51x31 like iOS, knob springs across */
+.switch { position: relative; width: 51px; height: 31px; border-radius: 16px; border: 0; padding: 0; background: var(--hairline); cursor: pointer; flex: none; transition: background var(--dur) var(--ease-out); -webkit-tap-highlight-color: transparent; }
+.switch[aria-checked="true"] { background: var(--accent); }
+.switch__knob { position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); transition: transform var(--dur) var(--spring); }
+.switch[aria-checked="true"] .switch__knob { transform: translateX(20px); }
+.switch:focus-visible { outline: 3px solid var(--sky-500); outline-offset: 2px; }
