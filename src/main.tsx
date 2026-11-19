@@ -6,12 +6,12 @@ import { ProfileProvider } from "./lib/profile";
 import { seedDemo } from "./lib/demo";
 import "./index.css";
 
-if (import.meta.env.DEV && new URLSearchParams(location.search).has("demo")) seedDemo();
+if ((import.meta.env.DEV || import.meta.env.VITE_DEMO) && new URLSearchParams(location.search).has("demo")) seedDemo();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ProfileProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <App />
       </BrowserRouter>
     </ProfileProvider>
