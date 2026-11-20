@@ -113,3 +113,17 @@ label.avatar-pick input { position: absolute; inset: 0; opacity: 0; cursor: poin
 .viewfinder__count { position: relative; z-index: 1; font-family: var(--font-display); font-size: 140px; font-weight: 800; color: #fff; text-shadow: 0 2px 16px rgba(0, 0, 0, 0.5); }
 .viewfinder__rec { position: absolute; top: 28px; left: 28px; z-index: 1; color: #fff; font-weight: 700; background: rgba(0, 0, 0, 0.45); padding: 4px 12px; border-radius: var(--radius-pill); }
 .rec[data-on="true"]::after { border-radius: 10px; width: 32px; height: 32px; }
+
+/* Swing history and comparison */
+.swing-row { display: flex; align-items: center; gap: 12px; }
+.swing-row__main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; border: 0; background: none; color: inherit; font: inherit; padding: 0; cursor: pointer; }
+.swing-row__thumb { width: 56px; height: 72px; flex: none; border-radius: 12px; object-fit: cover; background: var(--surface-2); display: block; }
+.swing-row__pick { width: 24px; height: 24px; accent-color: var(--accent); flex: none; }
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.compare__video { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: var(--radius-md); background: #000; display: grid; place-items: center; color: rgba(255,255,255,0.6); font-size: 14px; }
+.compare__row { display: grid; grid-template-columns: 1.3fr 1.2fr 0.8fr; gap: 8px; align-items: center; padding: 12px 0; }
+.compare__row + .compare__row { border-top: 1px solid var(--hairline); }
+.compare__verdict { font-size: 13px; font-weight: 700; text-align: right; color: var(--text-3); }
+.compare__verdict--mejor { color: var(--accent-strong); }
+.compare__verdict--peor { color: var(--danger); }
+.skeleton-demo { width: 100%; max-width: 270px; justify-self: center; aspect-ratio: 27 / 40; border-radius: var(--radius-md); background: linear-gradient(160deg, #15251d, #0a120e); }

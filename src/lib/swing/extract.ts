@@ -4,7 +4,7 @@ const BASE = `${import.meta.env.BASE_URL}mediapipe`;
 const STEP = 1 / 30;
 const MAX_SECONDS = 12;
 
-export type Extraction = { frames: Frame[]; sampled: number };
+export type Extraction = { frames: Frame[]; sampled: number; thumb: string | null };
 
 const once = (el: HTMLVideoElement, ev: string) => new Promise<void>((res) => el.addEventListener(ev, () => res(), { once: true }));
 
@@ -34,6 +34,7 @@ export async function extractPose(url: string, onProgress: (p: number) => void):
     await once(v, "loadeddata");
     const dur = Math.min(await durationOf(v), MAX_SECONDS);
     const frames: Frame[] = [];
+    let thumb: string | null = null;
     const total = Math.max(1, Math.floor(dur / STEP));
     for (let i = 0; i < total; i++) {
       const t = i * STEP;
@@ -42,9 +43,15 @@ export async function extractPose(url: string, onProgress: (p: number) => void):
       const r = landmarker.detectForVideo(v, Math.round(t * 1000) + 1);
       const lm = r.landmarks[0];
       if (lm) frames.push({ t, lm: lm.map((p) => ({ x: p.x, y: p.y })) });
+      if (i === Math.floor(total * 0.45) && v.videoWidth) {
+        const c = document.createElement("canvas");
+        c.width = 120; c.height = Math.round((120 * v.videoHeight) / v.videoWidth);
+        c.getContext("2d")?.drawImage(v, 0, 0, c.width, c.height);
+        thumb = c.toDataURL("image/jpeg", 0.6);
+      }
       onProgress((i + 1) / total);
     }
-    return { frames, sampled: total };
+    return { frames, sampled: total, thumb };
   } finally {
     landmarker.close();
     v.removeAttribute("src");
