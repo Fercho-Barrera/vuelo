@@ -1,12 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button, ButtonAnchor, Card, PillSelector, VideoPlayer } from "../components/glass";
-import { analyzeSwing, type Result } from "../lib/swing/analysis";
-import { Coach } from "./Coach";
-import { extractPose } from "../lib/swing/extract";
+import { Link } from "react-router-dom";
+import { Button, ButtonAnchor, ButtonLink, Card, PillSelector } from "../components/glass";
+import { SwingReview } from "../components/SwingReview";
 import { PROBLEM_TEXT, classifyError, extensionFor, pickMime, type CameraProblem, type Facing } from "../lib/camera";
+import { analyzeSwing, type Frame, type Result } from "../lib/swing/analysis";
+import { extractPose } from "../lib/swing/extract";
+import { saveAnalysis } from "../lib/swing/history";
+import type { SwingRecord } from "../lib/swing/record";
+import { Coach } from "./Coach";
 
 type Mode = "swing" | "ball";
-type Clip = { url: string; mime: string };
+type Clip = { url: string; blob: Blob; mime: string };
+type Analysis =
+  | { state: "idle" }
+  | { state: "busy"; p: number }
+  | { state: "error" }
+  | { state: "done"; result: Result; frames: Frame[]; saved: SwingRecord | null };
 const COUNTDOWN = 5;
 
 export function Grabar() {
@@ -18,7 +27,7 @@ export function Grabar() {
   const [recording, setRecording] = useState(false);
   const [count, setCount] = useState<number | null>(null);
   const [clip, setClip] = useState<Clip | null>(null);
-  const [analysis, setAnalysis] = useState<{ state: "idle" } | { state: "busy"; p: number } | { state: "error" } | { state: "done"; result: Result }>({ state: "idle" });
+  const [analysis, setAnalysis] = useState<Analysis>({ state: "idle" });
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -72,7 +81,8 @@ export function Grabar() {
     rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
     rec.onstop = () => {
       const type = rec.mimeType || mime || "video/webm";
-      setClip({ url: URL.createObjectURL(new Blob(chunks, { type })), mime: type });
+      const blob = new Blob(chunks, { type });
+      setClip({ url: URL.createObjectURL(blob), blob, mime: type });
       setRecording(false);
     };
     recRef.current = rec;
@@ -84,11 +94,12 @@ export function Grabar() {
     if (!clip) return;
     setAnalysis({ state: "busy", p: 0 });
     try {
-      const { frames } = await extractPose(clip.url, (p) => setAnalysis({ state: "busy", p }));
+      const { frames, thumb } = await extractPose(clip.url, (p) => setAnalysis({ state: "busy", p }));
       const result: Result = frames.length < 20
         ? { ok: false, reason: "No detectamos a una persona en el video. Encuádrate de cuerpo completo, con buena luz.", faults: [] }
         : analyzeSwing(frames);
-      setAnalysis({ state: "done", result });
+      const saved = result.ok ? await saveAnalysis(result, frames, thumb, clip.blob).catch(() => null) : null;
+      setAnalysis({ state: "done", result, frames, saved });
     } catch {
       setAnalysis({ state: "error" });
     }
@@ -107,21 +118,27 @@ export function Grabar() {
   };
 
   if (clip) {
+    const done = analysis.state === "done" ? analysis : null;
+    const ok = done?.result.ok ? done.result : null;
     return (
       <main className="screen">
         <h1>Tu video</h1>
-        <VideoPlayer src={clip.url} />
-        <span className="muted">Usa la velocidad 0.5x o 0.25x para ver tu swing en cámara lenta.</span>
-        <ButtonAnchor block href={clip.url} download={`vuelo-${mode}.${extensionFor(clip.mime)}`}>Guardar video</ButtonAnchor>
-        {mode === "swing" && analysis.state !== "done" && (
+        <SwingReview
+          src={clip.url}
+          frames={ok ? done!.frames : null}
+          faults={ok ? ok.faults.map((f) => f.id) : []}
+          times={ok && done!.saved ? done!.saved.times : null}
+        />
+        {mode === "swing" && !done && (
           <Button block variant="primary" disabled={analysis.state === "busy"} onClick={() => void analyze()}>
             {analysis.state === "busy" ? `Analizando… ${Math.round(analysis.p * 100)}%` : "Analizar mi swing"}
           </Button>
         )}
         {analysis.state === "error" && <span className="muted">No pudimos analizar el video. Intenta de nuevo.</span>}
-        {analysis.state === "done" && <Coach result={analysis.result} />}
+        {done && <Coach result={done.result} />}
+        {done?.saved && <Card tight><span>Guardado en <Link to="/grabar/historial">Mis swings</Link>. Ahí puedes compararlo con otros.</span></Card>}
+        <ButtonAnchor block href={clip.url} download={`vuelo-${mode}.${extensionFor(clip.mime)}`}>Guardar video en mi celular</ButtonAnchor>
         <Button block onClick={() => { setAnalysis({ state: "idle" }); setClip(null); }}>Grabar otro</Button>
-        <Card tight><span className="muted">Por ahora el video no se guarda en la app: se pierde al salir. Descárgalo si quieres conservarlo.</span></Card>
       </main>
     );
   }
@@ -145,6 +162,7 @@ export function Grabar() {
         <Button onClick={() => setFacing(facing === "environment" ? "user" : "environment")} disabled={recording || count !== null}>Voltear cámara</Button>
         {problem && <Button onClick={() => void start(facing)}>Reintentar</Button>}
       </div>
+      <ButtonLink block to="/grabar/historial">Mis swings</ButtonLink>
       <Card tight>
         <span className="muted">
           {mode === "swing" ? `Apoya el celular en vertical y de frente o por detrás. Al grabar hay ${COUNTDOWN} segundos para ponerte en posición. ` : "El trazado y la velocidad siempre se muestran como aprox. "}

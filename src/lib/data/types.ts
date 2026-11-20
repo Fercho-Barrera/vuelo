@@ -1,4 +1,5 @@
 import type { Round } from "../stats";
+import type { SwingRecord } from "../swing/record";
 
 export type Level = "principiante" | "intermedio";
 export type City = "CDMX" | "Querétaro" | "Otra";
@@ -18,4 +19,7 @@ export interface DataAdapter {
   saveProfile(p: Profile): Promise<void>;
   getRounds(): Promise<Round[]>;
   saveRound(r: Round): Promise<void>;
+  getSwings(): Promise<SwingRecord[]>;
+  saveSwing(s: SwingRecord): Promise<void>;
+  deleteSwing(id: string): Promise<void>;
 }

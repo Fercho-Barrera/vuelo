@@ -6,6 +6,9 @@ import { Ajustes } from "./screens/Ajustes";
 import { Perfil } from "./screens/Perfil";
 import { Grabar } from "./screens/Grabar";
 import { CoachEjemplo } from "./screens/CoachEjemplo";
+import { Swings } from "./screens/Swings";
+import { SwingDetalle } from "./screens/SwingDetalle";
+import { SwingComparar } from "./screens/SwingComparar";
 import { Stats } from "./screens/Stats";
 import { NuevaRonda } from "./screens/NuevaRonda";
 import { Ronda } from "./screens/Ronda";
@@ -32,6 +35,9 @@ export default function App() {
         <Route path="/" element={<Hoy />} />
         <Route path="/grabar" element={<Grabar />} />
         <Route path="/grabar/ejemplo" element={<CoachEjemplo />} />
+        <Route path="/grabar/historial" element={<Swings />} />
+        <Route path="/grabar/swing/:id" element={<SwingDetalle />} />
+        <Route path="/grabar/comparar" element={<SwingComparar />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/stats/nueva" element={<NuevaRonda />} />
         <Route path="/stats/ronda/:id" element={<Ronda />} />
