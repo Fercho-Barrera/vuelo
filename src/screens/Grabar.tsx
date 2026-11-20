@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonAnchor, Card, PillSelector, VideoPlayer } from "../components/glass";
+import { analyzeSwing, type Result } from "../lib/swing/analysis";
+import { extractPose } from "../lib/swing/extract";
 import { PROBLEM_TEXT, classifyError, extensionFor, pickMime, type CameraProblem, type Facing } from "../lib/camera";
 
 type Mode = "swing" | "ball";
@@ -15,6 +17,7 @@ export function Grabar() {
   const [recording, setRecording] = useState(false);
   const [count, setCount] = useState<number | null>(null);
   const [clip, setClip] = useState<Clip | null>(null);
+  const [analysis, setAnalysis] = useState<{ state: "idle" } | { state: "busy"; p: number } | { state: "error" } | { state: "done"; result: Result }>({ state: "idle" });
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -76,6 +79,20 @@ export function Grabar() {
     setRecording(true);
   };
 
+  const analyze = async () => {
+    if (!clip) return;
+    setAnalysis({ state: "busy", p: 0 });
+    try {
+      const { frames } = await extractPose(clip.url, (p) => setAnalysis({ state: "busy", p }));
+      const result: Result = frames.length < 20
+        ? { ok: false, reason: "No detectamos a una persona en el video. Encuádrate de cuerpo completo, con buena luz.", faults: [] }
+        : analyzeSwing(frames);
+      setAnalysis({ state: "done", result });
+    } catch {
+      setAnalysis({ state: "error" });
+    }
+  };
+
   const press = () => {
     if (recording) { recRef.current?.stop(); return; }
     if (count !== null) { window.clearInterval(timer.current); setCount(null); return; }
@@ -95,7 +112,14 @@ export function Grabar() {
         <VideoPlayer src={clip.url} />
         <span className="muted">Usa la velocidad 0.5x o 0.25x para ver tu swing en cámara lenta.</span>
         <ButtonAnchor block href={clip.url} download={`vuelo-${mode}.${extensionFor(clip.mime)}`}>Guardar video</ButtonAnchor>
-        <Button block variant="primary" onClick={() => setClip(null)}>Grabar otro</Button>
+        {mode === "swing" && analysis.state !== "done" && (
+          <Button block variant="primary" disabled={analysis.state === "busy"} onClick={() => void analyze()}>
+            {analysis.state === "busy" ? `Analizando… ${Math.round(analysis.p * 100)}%` : "Analizar mi swing"}
+          </Button>
+        )}
+        {analysis.state === "error" && <span className="muted">No pudimos analizar el video. Intenta de nuevo.</span>}
+        {analysis.state === "done" && <Coach result={analysis.result} />}
+        <Button block onClick={() => { setAnalysis({ state: "idle" }); setClip(null); }}>Grabar otro</Button>
         <Card tight><span className="muted">Por ahora el video no se guarda en la app: se pierde al salir. Descárgalo si quieres conservarlo.</span></Card>
       </main>
     );
@@ -127,5 +151,29 @@ export function Grabar() {
         </span>
       </Card>
     </main>
+  );
+}
+
+function Coach({ result }: { result: Result }) {
+  if (!result.ok) return <Card><strong>{result.reason}</strong></Card>;
+  const m = result.metrics;
+  return (
+    <div className="stack" style={{ gap: 12 }}>
+      <h2>Tu coach</h2>
+      {result.faults.length === 0 && <Card><strong>Buen swing. No encontramos fallas claras en este video.</strong></Card>}
+      {result.faults.map((f) => (
+        <Card key={f.id} className="stack">
+          <strong>{f.title}</strong>
+          <span>{f.detail}</span>
+          <span className="label-caption">Ejercicio: {f.drill}</span>
+        </Card>
+      ))}
+      <Card className="stat-trio">
+        <div><span className="num-big">{Math.round(m.shoulderTurnDeg)}°</span><span className="label-caption">Giro de hombros</span></div>
+        <div><span className="num-big">{m.tempoRatio.toFixed(1)}:1</span><span className="label-caption">Tempo</span></div>
+        <div><span className="num-big">{Math.round(m.swayPct)}%</span><span className="label-caption">Desliz de cadera</span></div>
+      </Card>
+      <span className="muted">Análisis aproximado a partir de video de frente. Los umbrales aún no están validados con un coach.</span>
+    </div>
   );
 }
