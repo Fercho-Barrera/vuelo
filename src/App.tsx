@@ -5,6 +5,7 @@ import { Hoy } from "./screens/Hoy";
 import { Ajustes } from "./screens/Ajustes";
 import { Perfil } from "./screens/Perfil";
 import { Grabar } from "./screens/Grabar";
+import { CoachEjemplo } from "./screens/CoachEjemplo";
 import { Stats } from "./screens/Stats";
 import { NuevaRonda } from "./screens/NuevaRonda";
 import { Ronda } from "./screens/Ronda";
@@ -30,6 +31,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Hoy />} />
         <Route path="/grabar" element={<Grabar />} />
+        <Route path="/grabar/ejemplo" element={<CoachEjemplo />} />
         <Route path="/stats" element={<Stats />} />
         <Route path="/stats/nueva" element={<NuevaRonda />} />
         <Route path="/stats/ronda/:id" element={<Ronda />} />
