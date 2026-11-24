@@ -166,3 +166,13 @@ input.field[type="date"], input.field[type="time"] { min-width: 0; }
 .field--picker svg { width: 20px; height: 20px; flex: none; transform: rotate(90deg); color: var(--text-2); }
 .sheet__list { max-height: 52vh; overflow-y: auto; margin: 0 calc(-1 * var(--space-2)); }
 .sheet__list .list-row__trail { color: var(--accent-strong); font-weight: 700; }
+.field-error { color: var(--danger-text); font-size: var(--fs-caption); font-weight: 600; }
+.field[aria-invalid="true"] { border-color: var(--danger); }
+.field--static { display: grid; align-content: center; gap: 2px; min-height: 56px; }
+
+/* Screen transitions */
+.page { animation: page-in var(--dur-page) var(--ease-out) backwards; }
+.page[data-dir="forward"] { --page-x: 28px; --page-y: 0px; }
+.page[data-dir="back"] { --page-x: -28px; --page-y: 0px; }
+.page[data-dir="tab"] { --page-x: 0px; --page-y: 8px; }
+@keyframes page-in { from { opacity: 0; transform: translate(var(--page-x), var(--page-y)); } to { opacity: 1; transform: none; } }

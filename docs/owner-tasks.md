@@ -14,3 +14,4 @@ Needs a person:
 - [ ] Talk to 10 amateur golfers (brief section 10).
 - [ ] Review the visual result on a real iPhone and a real Android phone.
 - [ ] Choose the support email and set `SUPPORT_EMAIL` in `src/lib/support.ts` (questions and reviews open the mail app to it; empty means the person types the recipient).
+- [ ] Choose the account backend and sign-in method. Accounts now hold an email and age on this device only (no password, no verification, no sign-in from a second phone). Real accounts need the backend decision above.

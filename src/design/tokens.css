@@ -12,6 +12,7 @@
   --lime: #c6f26b;
   --flag: #ff6a4d;          /* the pin flag, decoration only */
   --danger: #e5484d;
+  --danger-text: #b42318;   /* 6.5:1 on white, for small error text */
   --warn: #f5a524;
 
   --bg: #ffffff;
@@ -57,7 +58,7 @@
 
   --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-fast: 160ms; --dur: 280ms; --dur-slow: 600ms;
+  --dur-fast: 160ms; --dur: 280ms; --dur-slow: 600ms; --dur-page: 300ms;
 
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -73,6 +74,7 @@
     --text-2: #b6bbc1;
     --text-3: #8d939a;
     --hairline: #24272a;
+    --danger-text: #ff8a8f;
     --accent: #2fd68a;
     --accent-strong: #5ae0a3;
     --accent-contrast: #04140c;
@@ -92,5 +94,5 @@
   :root { --glass-fill: var(--surface); --glass-fill-strong: var(--surface); --glass-blur: 0px; --glass-saturate: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  :root { --dur-fast: 1ms; --dur: 1ms; --dur-slow: 1ms; }
+  :root { --dur-fast: 1ms; --dur: 1ms; --dur-slow: 1ms; --dur-page: 1ms; }
 }

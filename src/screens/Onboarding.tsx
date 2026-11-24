@@ -1,16 +1,20 @@
 import { useState } from "react";
+import { AccountFields, accountOk } from "../components/AccountFields";
 import { Button, GlassSwitch, PillSelector } from "../components/glass";
+import { cleanEmail, parseAge } from "../lib/account";
 import { BAG } from "../lib/bag";
 import { NOTIFICATION_CATEGORIES, defaultPrefs } from "../lib/notifications";
 import { useProfile } from "../lib/profile";
 import type { City, Level } from "../lib/data";
 
-const STEPS = 4;
+const STEPS = 5;
 
 export function Onboarding() {
   const { save } = useProfile();
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
   const [city, setCity] = useState<City>("CDMX");
   const [level, setLevel] = useState<Level>("principiante");
   const [handicap, setHandicap] = useState("");
@@ -18,9 +22,9 @@ export function Onboarding() {
   const [prefs, setPrefs] = useState(defaultPrefs);
 
   const toggleClub = (c: string) => setClubs((cs) => (cs.includes(c) ? cs.filter((x) => x !== c) : [...cs, c]));
-  const canNext = step !== 0 || name.trim().length > 0;
+  const canNext = step === 0 ? name.trim().length > 0 : step === 1 ? accountOk(email, age) : true;
   const finish = () =>
-    save({ name: name.trim(), city, level, handicap: handicap === "" ? null : Number(handicap), clubs, prefs });
+    save({ name: name.trim(), email: cleanEmail(email), age: parseAge(age) ?? undefined, city, level, handicap: handicap === "" ? null : Number(handicap), clubs, prefs });
 
   return (
     <main className="screen">
@@ -34,6 +38,12 @@ export function Onboarding() {
       )}
       {step === 1 && (
         <div className="stack" style={{ gap: 12 }}>
+          <h2>Crea tu cuenta</h2>
+          <AccountFields email={email} age={age} onEmail={setEmail} onAge={setAge} />
+        </div>
+      )}
+      {step === 2 && (
+        <div className="stack" style={{ gap: 12 }}>
           <h2>Tu golf</h2>
           <div className="stack" style={{ marginTop: 12 }}>
             <span className="label-caption">Ciudad</span>
@@ -45,7 +55,7 @@ export function Onboarding() {
           </div>
         </div>
       )}
-      {step === 2 && (
+      {step === 3 && (
         <div className="stack" style={{ gap: 12 }}>
           <h2>Tus palos</h2>
           <p className="muted">Con esto calculamos tus distancias reales por palo.</p>
@@ -56,7 +66,7 @@ export function Onboarding() {
           </div>
         </div>
       )}
-      {step === 3 && (
+      {step === 4 && (
         <div className="stack" style={{ gap: 12 }}>
           <h2>Notificaciones</h2>
           <p className="muted">Casi todo empieza apagado. Máximo 1 al día y 3 a la semana.</p>
