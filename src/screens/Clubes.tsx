@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Button, ButtonAnchor, Card, GlassSheet, PillSelector } from "../components/glass";
+import { Button, ButtonAnchor, Card, EmptyState, GlassSheet, PillSelector } from "../components/glass";
 import { ChevronIcon } from "../components/icons";
 import { CLUBS, accessOf, distanceKm, filterClubs, mapsLink, noFilters, practiceOf, priceText, servicesOf, sortByDistance, sortHomeFirst, waLink, type Club, type Filters } from "../lib/clubs";
 import { getFavorites, toggleFavorite } from "../lib/favorites";
@@ -39,7 +39,13 @@ export function Clubes() {
         <button type="button" className="chip" aria-pressed={onlyFavs} onClick={() => setOnlyFavs(!onlyFavs)}>Favoritos</button>
       </div>
       {geoError && <span className="muted">No pudimos ubicarte. Revisa el permiso de ubicación.</span>}
-      {list.length === 0 && <Card><p className="muted" style={{ margin: 0 }}>{CLUBS.length === 0 ? "Aún no hay clubes cargados." : "Ningún club coincide con tus filtros."}</p></Card>}
+      {list.length === 0 && (
+        <Card>
+          {CLUBS.length === 0
+            ? <EmptyState title="Aún no hay clubes" text="Estamos cargando el directorio con datos verificados." />
+            : <EmptyState title="Ningún club coincide" text="Prueba con menos filtros." action={<Button small onClick={() => { setF(noFilters); setOnlyFavs(false); setPos(null); }}>Quitar filtros</Button>} />}
+        </Card>
+      )}
       {list.map((c) => {
         const km = pos && c.lat !== null && c.lng !== null ? distanceKm(pos.lat, pos.lng, c.lat, c.lng) : null;
         const access = accessOf(c);

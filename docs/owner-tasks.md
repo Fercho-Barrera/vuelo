@@ -13,3 +13,4 @@ Needs a person:
 - [ ] Field test of ball tracing: compare estimated distance to a known distance and note the error in `DECISIONS.md`.
 - [ ] Talk to 10 amateur golfers (brief section 10).
 - [ ] Review the visual result on a real iPhone and a real Android phone.
+- [ ] Choose the support email and set `SUPPORT_EMAIL` in `src/lib/support.ts` (questions and reviews open the mail app to it; empty means the person types the recipient).
