@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ButtonLink, Card, ListRow, SectionHeader } from "../components/glass";
+import { ButtonLink, Card, EmptyState, ListRow, SectionHeader } from "../components/glass";
 import { PinIcon } from "../components/icons";
 import { data } from "../lib/data";
 import { handicapEstimate, lossAreas, overview, summarize, type Round } from "../lib/stats";
@@ -26,7 +26,7 @@ export function Stats() {
         <ButtonLink to="/stats/nueva" variant="primary" small>Nueva ronda</ButtonLink>
       </div>
       {!o ? (
-        <Card><p className="muted" style={{ margin: 0 }}>Registra tu primera ronda y aquí verás tu score, tus putts y dónde pierdes golpes.</p></Card>
+        <Card><EmptyState title="Aún no hay rondas" text="Registra una y aquí verás tu score, tus putts y dónde pierdes golpes." action={<ButtonLink to="/stats/nueva" variant="primary" small>Registrar ronda</ButtonLink>} /></Card>
       ) : (
         <>
           <div className="stat-grid">

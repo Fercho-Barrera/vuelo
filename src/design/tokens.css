@@ -10,17 +10,18 @@
   --forest-900: #072a1d;
   --forest-700: #0c4a33;
   --lime: #c6f26b;
+  --flag: #ff6a4d;          /* the pin flag, decoration only */
   --danger: #e5484d;
   --warn: #f5a524;
 
   --bg: #ffffff;
-  --surface: #f3f4f6;       /* flat card */
-  --surface-2: #e9ebee;     /* pressed, tracks */
+  --surface: #f1f4f1;       /* flat card, faint dew green */
+  --surface-2: #e5ebe5;     /* pressed, tracks */
   --raised: #ffffff;
   --text: #0b0d0c;
   --text-2: #4a4f55;
   --text-3: #656b72;        /* 4.9:1 on --surface */
-  --hairline: #e6e8eb;
+  --hairline: #e3e8e3;
   --accent: var(--green-500);
   --accent-strong: var(--green-600);
   --accent-contrast: #ffffff;

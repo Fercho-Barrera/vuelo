@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Card } from "../components/glass";
+import { Button, ButtonLink, Card, EmptyState } from "../components/glass";
 import { BackLink } from "./SwingDetalle";
 import { ProLock } from "../components/ProLock";
 import { canReplay } from "../lib/plan";
@@ -23,7 +23,7 @@ export function Swings() {
       <div className="topbar"><BackLink to="/grabar" label="Volver a grabar" /></div>
       <h1>Mis swings</h1>
       {swings === null && <span className="muted">Cargando…</span>}
-      {swings?.length === 0 && <Card><p className="muted" style={{ margin: 0 }}>Aún no tienes swings analizados. Graba uno y toca "Analizar mi swing".</p></Card>}
+      {swings?.length === 0 && <Card><EmptyState title="Aún no hay swings" text="Graba uno y toca Analizar mi swing para verlo aquí." action={<ButtonLink to="/grabar" variant="primary" small>Grabar un swing</ButtonLink>} /></Card>}
       {swings && swings.length > 1 && (pro ? <span className="muted">Elige dos para ver cómo cambiaste.</span> : <ProLock text="Comparar dos swings antes y ahora es parte de Pro." />)}
       {swings?.map((s) => (
         <Card key={s.id} className="swing-row" tight>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Actions, Avatar, Card, ListRow, SectionHeader } from "../components/glass";
+import { Actions, Avatar, ButtonLink, Card, EmptyState, FlightArc, ListRow, SectionHeader } from "../components/glass";
 import { CalendarIcon, FlagIcon, ListIcon, PinIcon, PlusIcon, TargetIcon, VideoIcon } from "../components/icons";
 import { data } from "../lib/data";
 import { buildPracticePlan } from "../lib/practicePlan";
@@ -32,6 +32,7 @@ export function Hoy() {
       </div>
 
       <Card hero>
+        <FlightArc className="hero__arc" />
         <div className="label-caption">Hándicap estimado</div>
         <div className="num-hero" style={{ margin: "8px 0 14px" }}>{hcp !== null ? hcp.toFixed(1) : "--"}</div>
         <div className="chips">
@@ -48,14 +49,17 @@ export function Hoy() {
       ]} />
 
       <SectionHeader title="Práctica de hoy" />
-      <Card flush>
-        {plan.length > 0 ? plan.map((d, i) => <ListRow key={i} icon={<TargetIcon />} accent={i === 0} title={d.source === "stats" ? "Desde tus rondas" : "Desde tu swing"} sub={d.text} />)
-          : <ListRow icon={<TargetIcon />} title="Aún sin plan" sub="Con tus rondas te armamos la práctica de la semana." />}
-      </Card>
+      {plan.length > 0 ? (
+        <Card flush>
+          {plan.map((d, i) => <ListRow key={i} icon={<TargetIcon />} accent={i === 0} title={d.source === "stats" ? "Desde tus rondas" : "Desde tu swing"} sub={d.text} />)}
+        </Card>
+      ) : (
+        <Card><EmptyState title="Tu práctica empieza con una ronda" text="Con tu primera ronda te armamos la práctica de la semana." action={<ButtonLink to="/stats/nueva" variant="primary" small>Registrar ronda</ButtonLink>} /></Card>
+      )}
 
       <SectionHeader title="Próximo tee time" />
       <Card flush>
-        <ListRow icon={<CalendarIcon />} title="Sin reservas" sub="Encuentra un campo y reserva con el club." />
+        <ListRow icon={<CalendarIcon />} title="Sin reservas" sub="Elige un club y contáctalo desde su ficha." onClick={() => nav("/clubes")} />
       </Card>
 
       {sorted.length > 0 && (
