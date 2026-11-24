@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Card, GlassSwitch, ListRow, PillSelector, SectionHeader } from "../components/glass";
-import { BackIcon, ChevronIcon, HelpIcon, StarIcon } from "../components/icons";
+import { BackIcon, BellIcon, ChevronIcon, HelpIcon, StarIcon } from "../components/icons";
 import { NOTIFICATION_CATEGORIES } from "../lib/notifications";
 import { useProfile } from "../lib/profile";
 
@@ -29,8 +29,11 @@ export function Ajustes() {
 
       <SectionHeader title="Preferencias" />
       <Card flush>
-        <details className="faq">
-          <summary>Notificaciones</summary>
+        <details className="faq faq--row">
+          <summary>
+            <span className="list-row__icon"><BellIcon /></span>
+            <span className="list-row__title">Notificaciones</span>
+          </summary>
           <p>Pocas y que valgan la pena. Máximo 1 al día y 3 a la semana. Silencio de 22:00 a 08:00.</p>
           <div className="stack faq__body">
             {NOTIFICATION_CATEGORIES.map((c) => (
