@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card } from "../components/glass";
 import { BackLink } from "./SwingDetalle";
+import { ProLock } from "../components/ProLock";
+import { canReplay } from "../lib/plan";
+import { usePlan } from "../lib/profile";
 import { listSwings } from "../lib/swing/history";
 import type { SwingRecord } from "../lib/swing/record";
 
@@ -9,6 +12,7 @@ const when = (iso: string) => new Date(iso).toLocaleDateString("es-MX", { day: "
 
 export function Swings() {
   const nav = useNavigate();
+  const pro = canReplay(usePlan());
   const [swings, setSwings] = useState<SwingRecord[] | null>(null);
   const [picked, setPicked] = useState<string[]>([]);
   useEffect(() => { void listSwings().then(setSwings); }, []);
@@ -20,7 +24,7 @@ export function Swings() {
       <h1>Mis swings</h1>
       {swings === null && <span className="muted">Cargando…</span>}
       {swings?.length === 0 && <Card><p className="muted" style={{ margin: 0 }}>Aún no tienes swings analizados. Graba uno y toca "Analizar mi swing".</p></Card>}
-      {swings && swings.length > 1 && <span className="muted">Elige dos para ver cómo cambiaste.</span>}
+      {swings && swings.length > 1 && (pro ? <span className="muted">Elige dos para ver cómo cambiaste.</span> : <ProLock text="Comparar dos swings antes y ahora es parte de Pro." />)}
       {swings?.map((s) => (
         <Card key={s.id} className="swing-row" tight>
           <button type="button" className="swing-row__main" onClick={() => nav(`/grabar/swing/${s.id}`)}>
@@ -31,10 +35,10 @@ export function Swings() {
               <span className="label-caption">Hombros {Math.round(s.metrics.shoulderTurnDeg)}° · Tempo {s.metrics.tempoRatio.toFixed(1)}:1</span>
             </span>
           </button>
-          {swings.length > 1 && <input type="checkbox" className="swing-row__pick" checked={picked.includes(s.id)} onChange={() => toggle(s.id)} aria-label={`Elegir swing del ${when(s.date)}`} />}
+          {pro && swings.length > 1 && <input type="checkbox" className="swing-row__pick" checked={picked.includes(s.id)} onChange={() => toggle(s.id)} aria-label={`Elegir swing del ${when(s.date)}`} />}
         </Card>
       ))}
-      {swings && swings.length > 1 && <Button block variant="primary" disabled={picked.length !== 2} onClick={() => nav(`/grabar/comparar?a=${picked[0]}&b=${picked[1]}`)}>Comparar {picked.length}/2</Button>}
+      {pro && swings && swings.length > 1 && <Button block variant="primary" disabled={picked.length !== 2} onClick={() => nav(`/grabar/comparar?a=${picked[0]}&b=${picked[1]}`)}>Comparar {picked.length}/2</Button>}
     </main>
   );
 }

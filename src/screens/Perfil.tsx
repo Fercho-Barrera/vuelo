@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Avatar, Card, ListRow, SectionHeader } from "../components/glass";
 import { CameraIcon, FlagIcon, GearIcon } from "../components/icons";
 import { BAG } from "../lib/bag";
+import { isPro } from "../lib/plan";
 import { fileToAvatarDataUrl } from "../lib/photo";
 import { CLUBS } from "../lib/clubs";
 import { data } from "../lib/data";
@@ -48,6 +49,11 @@ export function Perfil() {
           <div><span className="num-big" style={{ fontSize: 30 }}>{profile.handicap ?? "--"}</span><span className="label-caption">Hándicap</span></div>
           <div><span className="num-big" style={{ fontSize: 30 }}>{hcp?.toFixed(1) ?? "--"}</span><span className="label-caption">Estimado</span></div>
         </div>
+      </Card>
+
+      <SectionHeader title="Mi plan" to="/planes" cta="Ver planes" />
+      <Card flush>
+        <ListRow icon={<FlagIcon />} title={isPro(profile.plan ?? "free") ? "Vuelo Pro" : "Gratis"} sub={isPro(profile.plan ?? "free") ? "Todo incluido" : "Pro desbloquea esqueleto, comparar y videos"} />
       </Card>
 
       <SectionHeader title="Mi bolsa" />

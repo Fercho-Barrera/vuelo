@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, ButtonAnchor, ButtonLink, Card, PillSelector } from "../components/glass";
+import { ProLock } from "../components/ProLock";
+import { canReplay } from "../lib/plan";
+import { usePlan } from "../lib/profile";
 import { SwingReview } from "../components/SwingReview";
 import { PROBLEM_TEXT, classifyError, extensionFor, pickMime, type CameraProblem, type Facing } from "../lib/camera";
 import { analyzeSwing, type Frame, type Result } from "../lib/swing/analysis";
@@ -19,6 +22,7 @@ type Analysis =
 const COUNTDOWN = 5;
 
 export function Grabar() {
+  const plan = usePlan();
   const [mode, setMode] = useState<Mode>("swing");
   const [facing, setFacing] = useState<Facing>("environment");
   const [problem, setProblem] = useState<CameraProblem | null>(null);
@@ -98,7 +102,7 @@ export function Grabar() {
       const result: Result = frames.length < 20
         ? { ok: false, reason: "No detectamos a una persona en el video. Encuádrate de cuerpo completo, con buena luz.", faults: [] }
         : analyzeSwing(frames);
-      const saved = result.ok ? await saveAnalysis(result, frames, thumb, clip.blob).catch(() => null) : null;
+      const saved = result.ok ? await saveAnalysis(result, frames, thumb, clip.blob, plan).catch(() => null) : null;
       setAnalysis({ state: "done", result, frames, saved });
     } catch {
       setAnalysis({ state: "error" });
@@ -125,7 +129,7 @@ export function Grabar() {
         <h1>Tu video</h1>
         <SwingReview
           src={clip.url}
-          frames={ok ? done!.frames : null}
+          frames={ok && canReplay(plan) ? done!.frames : null}
           faults={ok ? ok.faults.map((f) => f.id) : []}
           times={ok && done!.saved ? done!.saved.times : null}
         />
@@ -135,6 +139,7 @@ export function Grabar() {
           </Button>
         )}
         {analysis.state === "error" && <span className="muted">No pudimos analizar el video. Intenta de nuevo.</span>}
+        {ok && !canReplay(plan) && <ProLock text="El esqueleto sobre tu video, volver a ver tus videos y compararlos son parte de Pro." />}
         {done && <Coach result={done.result} />}
         {done?.saved && <Card tight><span>Guardado en <Link to="/grabar/historial">Mis swings</Link>. Ahí puedes compararlo con otros.</span></Card>}
         <ButtonAnchor block href={clip.url} download={`vuelo-${mode}.${extensionFor(clip.mime)}`}>Guardar video en mi celular</ButtonAnchor>

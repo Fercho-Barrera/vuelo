@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { data, type Profile } from "./data";
+import type { PlanId } from "./plan";
 
 type Ctx = { profile: Profile | null; loading: boolean; save: (p: Profile) => Promise<void> };
 const ProfileCtx = createContext<Ctx>({ profile: null, loading: true, save: async () => {} });
@@ -21,3 +22,5 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 }
 
 export const useProfile = () => useContext(ProfileCtx);
+
+export const usePlan = (): PlanId => useProfile().profile?.plan ?? "free";

@@ -5,6 +5,9 @@ import { listSwings } from "../lib/swing/history";
 import { compareSwings, type Comparison, type SwingRecord } from "../lib/swing/record";
 import { useClipUrl } from "../lib/swing/useClipUrl";
 import { BackLink } from "./SwingDetalle";
+import { ProLock } from "../components/ProLock";
+import { canReplay } from "../lib/plan";
+import { usePlan } from "../lib/profile";
 
 const day = (iso: string) => new Date(iso).toLocaleDateString("es-MX", { day: "numeric", month: "short" });
 
@@ -19,6 +22,7 @@ function Clip({ rec, label, videoRef }: { rec: SwingRecord; label: string; video
 }
 
 export function SwingComparar() {
+  const pro = canReplay(usePlan());
   const [params] = useSearchParams();
   const [cmp, setCmp] = useState<Comparison | null | undefined>(undefined);
   const va = useRef<HTMLVideoElement>(null), vb = useRef<HTMLVideoElement>(null);
@@ -33,6 +37,7 @@ export function SwingComparar() {
   const both = (f: (v: HTMLVideoElement) => void) => [va.current, vb.current].forEach((v) => v && f(v));
   const play = () => both((v) => { v.pause(); v.currentTime = 0; v.playbackRate = slow ? 0.5 : 1; void v.play(); });
 
+  if (!pro) return <main className="screen"><BackLink to="/grabar/historial" label="Volver" /><ProLock text="Comparar dos swings antes y ahora es parte de Pro." /></main>;
   if (cmp === undefined) return <main className="screen"><span className="muted">Cargando…</span></main>;
   if (cmp === null) return <main className="screen"><BackLink to="/grabar/historial" label="Volver" /><Card>Elige dos swings para compararlos.</Card></main>;
   const mark = { mejor: "▲ Mejor", peor: "▼ Peor", igual: "Igual" } as const;

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { FREE_LIMITS, canUse, monthKey, PRICES, visibleRounds } from "./plan";
+import { FREE_LIMITS, PRO_HISTORY_DAYS, canReplay, canUse, monthKey, PRICES, swingsToPrune, visibleRounds } from "./plan";
+import { MAX_SAVED, type SwingRecord } from "./swing/record";
 import { buildPracticePlan } from "./practicePlan";
 import type { Fault } from "./swing/analysis";
 
@@ -23,6 +24,32 @@ describe("free limits", () => {
     expect(PRICES.pro_monthly).toBe(179);
     expect(PRICES.pro_annual).toBe(1499);
     expect(PRICES.pro_monthly * 12 - PRICES.pro_annual).toBe(649);
+  });
+});
+
+describe("swing history retention", () => {
+  const now = new Date("2026-11-23T12:00:00Z");
+  const daysAgo = (n: number) => new Date(now.getTime() - n * 86_400_000).toISOString();
+  const sw = (id: string, date: string) => ({ id, date }) as SwingRecord;
+  it("pro keeps 90 days and drops only older swings", () => {
+    const list = [sw("new", daysAgo(1)), sw("edge", daysAgo(PRO_HISTORY_DAYS - 1)), sw("old", daysAgo(PRO_HISTORY_DAYS + 1))];
+    expect(swingsToPrune("pro_monthly", list, now).map((s) => s.id)).toEqual(["old"]);
+  });
+  it("pro has no count cap inside the 90 days", () => {
+    const list = Array.from({ length: MAX_SAVED + 5 }, (_, i) => sw(String(i), daysAgo(i)));
+    expect(swingsToPrune("pro_annual", list, now)).toEqual([]);
+  });
+  it("free keeps only the newest MAX_SAVED swings", () => {
+    const list = Array.from({ length: MAX_SAVED + 2 }, (_, i) => sw(String(i), daysAgo(i)));
+    expect(swingsToPrune("free", list, now).map((s) => s.id)).toEqual([String(MAX_SAVED), String(MAX_SAVED + 1)]);
+  });
+});
+
+describe("pro-only features", () => {
+  it("replay, skeleton and compare are pro only", () => {
+    expect(canReplay("free")).toBe(false);
+    expect(canReplay("pro_monthly")).toBe(true);
+    expect(canReplay("pro_annual")).toBe(true);
   });
 });
 
