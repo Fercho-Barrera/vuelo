@@ -20,6 +20,9 @@ import { Resenas } from "./screens/Resenas";
 import { Onboarding } from "./screens/Onboarding";
 import { PageTransition } from "./components/PageTransition";
 import { CompletarCuenta } from "./screens/CompletarCuenta";
+import { IniciarSesion } from "./screens/IniciarSesion";
+import { hasPassword } from "./lib/auth";
+import { useSession } from "./lib/session";
 import { useProfile } from "./lib/profile";
 
 const TABS: TabItem[] = [
@@ -32,9 +35,11 @@ const TABS: TabItem[] = [
 
 export default function App() {
   const { profile, loading } = useProfile();
+  const { unlocked } = useSession();
   if (loading) return null;
   if (!profile) return <Onboarding />;
-  if (!profile.email || !profile.age) return <CompletarCuenta />;
+  if (!profile.email || !profile.age || !hasPassword()) return <CompletarCuenta />;
+  if (!unlocked) return <IniciarSesion />;
   return (
     <>
       <PageTransition>

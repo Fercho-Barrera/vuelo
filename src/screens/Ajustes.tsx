@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MIN_AGE, parseAge } from "../lib/account";
-import { Card, GlassSwitch, ListRow, PillSelector, SectionHeader } from "../components/glass";
+import { Button, Card, GlassSwitch, ListRow, PillSelector, SectionHeader } from "../components/glass";
 import { BackIcon, BellIcon, ChevronIcon, HelpIcon, StarIcon } from "../components/icons";
 import { NOTIFICATION_CATEGORIES } from "../lib/notifications";
 import { useProfile } from "../lib/profile";
+import { useSession } from "../lib/session";
 
 // Account configuration: personal data and notification preferences. Opened from the gear on Perfil.
 export function Ajustes() {
   const { profile, save } = useProfile();
   const nav = useNavigate();
+  const { lock } = useSession();
   const [ageText, setAgeText] = useState(profile?.age ? String(profile.age) : "");
   if (!profile) return null;
   const set = (patch: Partial<typeof profile>) => save({ ...profile, ...patch });
@@ -56,6 +58,8 @@ export function Ajustes() {
         <ListRow icon={<HelpIcon />} title="Preguntas frecuentes" sub="Dudas comunes o escríbenos la tuya" trail={<ChevronIcon />} onClick={() => nav("/perfil/ajustes/ayuda")} />
         <ListRow icon={<StarIcon />} title="Reseñas y sugerencias" sub="Dinos qué mejorar" trail={<ChevronIcon />} onClick={() => nav("/perfil/ajustes/resenas")} />
       </Card>
+
+      <Button block onClick={lock}>Cerrar sesión</Button>
     </main>
   );
 }
