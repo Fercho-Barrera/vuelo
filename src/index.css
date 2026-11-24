@@ -38,7 +38,7 @@ button, input, select { font: inherit; }
 .stat-grid .card { display: grid; gap: 8px; }
 
 .bar { height: 10px; border-radius: 5px; background: var(--surface-2); overflow: hidden; }
-.bar > span { display: block; height: 100%; border-radius: 5px; background: var(--accent); transition: width 600ms var(--ease-out); }
+.bar > span { display: block; height: 100%; border-radius: 5px; background: var(--accent); transition: width var(--dur-slow) var(--ease-out); }
 
 .field { width: 100%; min-height: 56px; padding: 0 var(--space-4); border-radius: var(--radius-md); border: 2px solid transparent; background: var(--surface); color: var(--text); font-size: 17px; }
 .field:focus-visible { outline: none; border-color: var(--accent); }
@@ -103,7 +103,7 @@ label.avatar-pick input { position: absolute; inset: 0; opacity: 0; cursor: poin
 .badge--no { background: var(--surface-2); color: var(--text-2); }
 .badge--maybe { background: color-mix(in srgb, var(--warn) 20%, transparent); color: #9a6200; }
 @media (prefers-color-scheme: dark) { .badge--maybe { color: var(--warn); } }
-.tag { padding: 4px 10px; border-radius: var(--radius-pill); background: var(--raised); font-size: 12px; font-weight: 600; color: var(--text-2); }
+.tag { padding: 4px 10px; border-radius: var(--radius-pill); background: var(--raised); font-size: 13px; font-weight: 600; color: var(--text-2); }
 
 /* Live camera on Grabar */
 .viewfinder__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -123,7 +123,7 @@ label.avatar-pick input { position: absolute; inset: 0; opacity: 0; cursor: poin
 .compare__video { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: var(--radius-md); background: #000; display: grid; place-items: center; color: rgba(255,255,255,0.6); font-size: 14px; }
 .compare__row { display: grid; grid-template-columns: 1.3fr 1.2fr 0.8fr; gap: 8px; align-items: center; padding: 12px 0; }
 .compare__row + .compare__row { border-top: 1px solid var(--hairline); }
-.compare__verdict { font-size: 13px; font-weight: 700; text-align: right; color: var(--text-3); }
+.compare__verdict { font-size: 14px; font-weight: 700; text-align: right; color: var(--text-3); }
 .compare__verdict--mejor { color: var(--accent-strong); }
 .compare__verdict--peor { color: var(--danger); }
 .skeleton-demo { width: 100%; max-width: 270px; justify-self: center; aspect-ratio: 27 / 40; border-radius: var(--radius-md); background: linear-gradient(160deg, #15251d, #0a120e); }
