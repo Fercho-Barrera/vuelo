@@ -1,16 +1,25 @@
 import { useState } from "react";
+import { AccountFields, accountOk } from "../components/AccountFields";
 import { Button, GlassSwitch, PillSelector } from "../components/glass";
+import { cleanEmail, parseAge } from "../lib/account";
+import { setPassword } from "../lib/auth";
+import { useSession } from "../lib/session";
 import { BAG } from "../lib/bag";
 import { NOTIFICATION_CATEGORIES, defaultPrefs } from "../lib/notifications";
 import { useProfile } from "../lib/profile";
 import type { City, Level } from "../lib/data";
 
-const STEPS = 4;
+const STEPS = 5;
 
 export function Onboarding() {
   const { save } = useProfile();
+  const { unlock } = useSession();
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
+  const [pw, setPw] = useState("");
+  const [pw2, setPw2] = useState("");
   const [city, setCity] = useState<City>("CDMX");
   const [level, setLevel] = useState<Level>("principiante");
   const [handicap, setHandicap] = useState("");
@@ -18,9 +27,12 @@ export function Onboarding() {
   const [prefs, setPrefs] = useState(defaultPrefs);
 
   const toggleClub = (c: string) => setClubs((cs) => (cs.includes(c) ? cs.filter((x) => x !== c) : [...cs, c]));
-  const canNext = step !== 0 || name.trim().length > 0;
-  const finish = () =>
-    save({ name: name.trim(), city, level, handicap: handicap === "" ? null : Number(handicap), clubs, prefs });
+  const canNext = step === 0 ? name.trim().length > 0 : step === 1 ? accountOk(email, age, pw, pw2) : true;
+  const finish = async () => {
+    await setPassword(pw);
+    await save({ name: name.trim(), email: cleanEmail(email), age: parseAge(age) ?? undefined, city, level, handicap: handicap === "" ? null : Number(handicap), clubs, prefs });
+    unlock();
+  };
 
   return (
     <main className="screen">
@@ -34,6 +46,12 @@ export function Onboarding() {
       )}
       {step === 1 && (
         <div className="stack" style={{ gap: 12 }}>
+          <h2>Crea tu cuenta</h2>
+          <AccountFields email={email} age={age} pw={pw} pw2={pw2} onEmail={setEmail} onAge={setAge} onPw={setPw} onPw2={setPw2} />
+        </div>
+      )}
+      {step === 2 && (
+        <div className="stack" style={{ gap: 12 }}>
           <h2>Tu golf</h2>
           <div className="stack" style={{ marginTop: 12 }}>
             <span className="label-caption">Ciudad</span>
@@ -45,7 +63,7 @@ export function Onboarding() {
           </div>
         </div>
       )}
-      {step === 2 && (
+      {step === 3 && (
         <div className="stack" style={{ gap: 12 }}>
           <h2>Tus palos</h2>
           <p className="muted">Con esto calculamos tus distancias reales por palo.</p>
@@ -56,7 +74,7 @@ export function Onboarding() {
           </div>
         </div>
       )}
-      {step === 3 && (
+      {step === 4 && (
         <div className="stack" style={{ gap: 12 }}>
           <h2>Notificaciones</h2>
           <p className="muted">Casi todo empieza apagado. Máximo 1 al día y 3 a la semana.</p>
@@ -75,7 +93,7 @@ export function Onboarding() {
         {step < STEPS - 1 ? (
           <Button variant="primary" onClick={() => setStep((s) => s + 1)} disabled={!canNext}>Siguiente</Button>
         ) : (
-          <Button variant="primary" onClick={finish}>Empezar</Button>
+          <Button variant="primary" onClick={() => void finish()}>Empezar</Button>
         )}
       </div>
     </main>

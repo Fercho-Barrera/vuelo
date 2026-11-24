@@ -57,7 +57,7 @@
 .glass-button--block { display: flex; width: 100%; }
 
 /* Tab bar: floating glass capsule */
-.tabbar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--safe-bottom) + 12px); width: min(calc(100% - 2 * var(--gutter)), 420px); display: flex; padding: 6px; border-radius: var(--radius-pill); z-index: 20; }
+.tabbar { position: fixed; left: 50%; transform: translateX(-50%); transform-origin: 50% 100%; bottom: calc(var(--safe-bottom) + 12px); width: min(calc(100% - 2 * var(--gutter)), 420px); display: flex; padding: 6px; border-radius: var(--radius-pill); z-index: 20; }
 .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border-radius: var(--radius-pill); color: var(--text-2); text-decoration: none; font-size: 12px; font-weight: 600; transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out); -webkit-tap-highlight-color: transparent; }
 .tab svg { width: 24px; height: 24px; }
 .tab[aria-current="page"] { color: var(--text); background: var(--glass-tint); box-shadow: 0 1px 1px rgba(255, 255, 255, 0.7) inset, 0 0 0 0.5px rgba(255, 255, 255, 0.35) inset; }
@@ -65,11 +65,11 @@
 
 /* Scroll edge: softens content under the floating bar so it stays legible */
 .scroll-edge { position: fixed; left: 0; right: 0; bottom: 0; height: calc(var(--safe-bottom) + 110px); z-index: 19; pointer-events: none; background: linear-gradient(to top, color-mix(in srgb, var(--bg) 85%, transparent), transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); -webkit-mask-image: linear-gradient(to top, #000 30%, transparent); mask-image: linear-gradient(to top, #000 30%, transparent); }
-.tabbar { transition: width var(--dur) var(--ease-out), padding var(--dur) var(--ease-out), bottom var(--dur) var(--ease-out); }
-.tab span { transition: opacity var(--dur-fast), max-height var(--dur) var(--ease-out); max-height: 16px; overflow: hidden; }
-.tabbar[data-min="true"] { width: min(calc(100% - 2 * var(--gutter)), 260px); padding: 2px 6px; bottom: calc(var(--safe-bottom) + 8px); }
-.tabbar[data-min="true"] .tab span { opacity: 0; max-height: 0; }
-.tabbar[data-min="true"] .tab { gap: 0; padding: 10px 4px; }
+/* Minimizing only moves and scales the bar (transform) and fades the labels (opacity): nothing re-lays out while scrolling. */
+.tabbar { transition: transform var(--dur) var(--ease-out); }
+.tab span { transition: opacity var(--dur-fast); }
+.tabbar[data-min="true"] { transform: translateX(-50%) translateY(12px) scale(0.8); }
+.tabbar[data-min="true"] .tab span { opacity: 0; }
 
 /* Sheet */
 .sheet-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); opacity: 0; pointer-events: none; transition: opacity var(--dur) var(--ease-out); z-index: 30; }

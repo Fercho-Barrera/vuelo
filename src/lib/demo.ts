@@ -1,3 +1,4 @@
+import { setPassword, unlock } from "./auth";
 import { CLUBS } from "./clubs";
 import { defaultPrefs } from "./notifications";
 import type { Hole, Round } from "./stats";
@@ -29,10 +30,11 @@ function seedSwings() {
   localStorage.setItem("vuelo.swings.v1", JSON.stringify(swings));
 }
 
-export function seedDemo() {
+// The demo account is demo@example.com with password demo1234, already signed in.
+export async function seedDemo() {
   seedSwings();
   if (localStorage.getItem("vuelo.profile.v1")) return;
-  localStorage.setItem("vuelo.profile.v1", JSON.stringify({ name: "Fer", city: "CDMX", level: "intermedio", handicap: 19, clubs: ["Driver", "Hierro 7", "Putter"], prefs: defaultPrefs }));
+  localStorage.setItem("vuelo.profile.v1", JSON.stringify({ name: "Fer", email: "demo@example.com", age: 30, city: "CDMX", level: "intermedio", handicap: 19, clubs: ["Driver", "Hierro 7", "Putter"], prefs: defaultPrefs }));
   const rounds: Round[] = [
     { id: "d1", courseName: "Club de Golf México", date: "2026-11-15", holes: course([5,4,3,6,5,4,4,6,5,5,4,4,6,5,4,3,6,5], [2,2,2,3,2,2,2,2,3,2,2,2,2,3,2,2,2,2]) },
     { id: "d2", courseName: "Zibatá Golf Club", date: "2026-11-02", holes: course([5,5,4,6,5,5,3,6,4,5,5,3,6,5,5,4,6,5], [2,3,2,2,3,2,2,3,2,2,3,2,2,2,3,2,2,3]) },
@@ -41,4 +43,6 @@ export function seedDemo() {
   ];
   localStorage.setItem("vuelo.favorites.v1", JSON.stringify(CLUBS.slice(0, 2).map((c) => c.id)));
   localStorage.setItem("vuelo.rounds.v1", JSON.stringify(rounds));
+  await setPassword("demo1234");
+  unlock();
 }

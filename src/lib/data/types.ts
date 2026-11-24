@@ -14,6 +14,8 @@ export type Profile = {
   clubs: string[]; // clubs in the bag, e.g. "Driver", "7i"
   prefs: Record<string, boolean>; // notification categories
   photo?: string | null; // avatar as a small data URL
+  email?: string; // account identity. Local only until a backend exists.
+  age?: number;
   plan?: PlanId; // missing means free. Billing is not connected yet, so this is local only.
 };
 
