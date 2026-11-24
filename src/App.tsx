@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { GlassTabBar, type TabItem } from "./components/glass";
 import { FlagIcon, HomeIcon, RecordIcon, StatsIcon, UserIcon } from "./components/icons";
 import { Hoy } from "./screens/Hoy";
@@ -27,7 +27,6 @@ const TABS: TabItem[] = [
 
 export default function App() {
   const { profile, loading } = useProfile();
-  const { pathname } = useLocation();
   if (loading) return null;
   if (!profile) return <Onboarding />;
   return (
@@ -47,8 +46,7 @@ export default function App() {
         <Route path="/perfil/ajustes" element={<Ajustes />} />
         <Route path="/planes" element={<Planes />} />
       </Routes>
-      {/* Home already has the quick actions and the profile avatar at the top, so no tab bar there. */}
-      {pathname !== "/" && <GlassTabBar items={TABS} />}
+      <GlassTabBar items={TABS} />
     </>
   );
 }

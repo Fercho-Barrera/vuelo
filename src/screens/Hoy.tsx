@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Actions, Avatar, ButtonLink, Card, EmptyState, FlightArc, ListRow, SectionHeader } from "../components/glass";
-import { CalendarIcon, FlagIcon, ListIcon, PinIcon, PlusIcon, TargetIcon, VideoIcon } from "../components/icons";
+import { Avatar, ButtonLink, Card, EmptyState, FlightArc, ListRow, SectionHeader } from "../components/glass";
+import { CalendarIcon, PinIcon, TargetIcon } from "../components/icons";
 import { data } from "../lib/data";
 import { buildPracticePlan } from "../lib/practicePlan";
 import { useProfile } from "../lib/profile";
@@ -22,7 +22,7 @@ export function Hoy() {
   const last = sorted[0] ? summarize(sorted[0]) : null;
 
   return (
-    <main className="screen screen--no-tabs">
+    <main className="screen">
       <div className="topbar">
         <div className="stack" style={{ gap: 2 }}>
           <span className="label-caption">Hola</span>
@@ -40,13 +40,6 @@ export function Hoy() {
           {last && <span className="pillbadge">Última: {last.total} ({sign(last.toPar)})</span>}
         </div>
       </Card>
-
-      <Actions items={[
-        { to: "/grabar", label: "Grabar", icon: <VideoIcon /> },
-        { to: "/stats/nueva", label: "Ronda", icon: <PlusIcon /> },
-        { to: "/clubes", label: "Clubes", icon: <FlagIcon /> },
-        { to: "/stats", label: "Stats", icon: <ListIcon /> },
-      ]} />
 
       <SectionHeader title="Práctica de hoy" />
       {plan.length > 0 ? (

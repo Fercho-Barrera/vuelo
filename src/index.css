@@ -86,7 +86,6 @@ label.avatar-pick { position: relative; cursor: pointer; border-radius: 50%; dis
 label.avatar-pick input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
 .avatar-pick__badge { position: absolute; right: -2px; bottom: -2px; width: 30px; height: 30px; border-radius: 50%; background: var(--raised); color: var(--text); display: grid; place-items: center; border: 2px solid var(--bg); }
 .avatar-pick__badge svg { width: 16px; height: 16px; }
-.screen--no-tabs { padding-bottom: calc(var(--safe-bottom) + 40px); }
 
 /* Club card */
 .club-card { display: grid; gap: 12px; cursor: pointer; transition: transform var(--dur-fast) var(--spring); -webkit-tap-highlight-color: transparent; }
