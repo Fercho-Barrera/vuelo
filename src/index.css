@@ -162,3 +162,7 @@ label.avatar-pick input { position: absolute; inset: 0; opacity: 0; cursor: poin
 .teetime-row .list-row + .list-row { border-top: 0; }
 select.field { appearance: none; }
 input.field[type="date"], input.field[type="time"] { min-width: 0; }
+.field--picker { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); text-align: left; border: 2px solid transparent; cursor: pointer; }
+.field--picker svg { width: 20px; height: 20px; flex: none; transform: rotate(90deg); color: var(--text-2); }
+.sheet__list { max-height: 52vh; overflow-y: auto; margin: 0 calc(-1 * var(--space-2)); }
+.sheet__list .list-row__trail { color: var(--accent-strong); font-weight: 700; }

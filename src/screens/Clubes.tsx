@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Button, ButtonAnchor, Card, EmptyState, GlassSheet, PillSelector } from "../components/glass";
+import { Button, ButtonAnchor, ButtonLink, Card, EmptyState, GlassSheet, PillSelector } from "../components/glass";
 import { ChevronIcon } from "../components/icons";
 import { CLUBS, accessOf, distanceKm, filterClubs, mapsLink, noFilters, practiceOf, priceText, servicesOf, sortByDistance, sortHomeFirst, waLink, type Club, type Filters } from "../lib/clubs";
 import { getFavorites, toggleFavorite } from "../lib/favorites";
@@ -65,8 +65,8 @@ export function Clubes() {
               {practice.length > 0 && <span className="label-caption">Para practicar: {practice.join(" · ").toLowerCase()}</span>}
             </div>
             <div className="row club-card__foot">
-              <span className="label-caption">Ver detalles</span>
-              <span className="club-card__go"><ChevronIcon /></span>
+              <ButtonLink small variant="primary" to={`/teetime?club=${c.id}`} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>Agendar tee time</ButtonLink>
+              <span className="club-card__go" aria-hidden="true"><ChevronIcon /></span>
             </div>
           </Card>
         );
@@ -83,6 +83,7 @@ export function Clubes() {
             {(open.whatsapp ?? open.phone) && <ButtonAnchor variant="primary" block href={open.whatsapp ? waLink(open.whatsapp) : `tel:${open.phone}`}>{open.whatsapp ? "Reservar por WhatsApp" : "Llamar al club"}</ButtonAnchor>}
             <ButtonAnchor block href={mapsLink(open)}>Abrir en Mapas</ButtonAnchor>
             {open.website && <ButtonAnchor block href={open.website}>Sitio del club</ButtonAnchor>}
+            <ButtonLink block to={`/teetime?club=${open.id}`}>Agendar tee time</ButtonLink>
             <Button block onClick={() => setFavs(toggleFavorite(open.id))}>{favs.includes(open.id) ? "Quitar de favoritos" : "Guardar en favoritos"}</Button>
           </div>
         )}
