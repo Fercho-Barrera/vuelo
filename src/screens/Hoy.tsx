@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Avatar, ButtonLink, Card, EmptyState, FlightArc, ListRow, SectionHeader } from "../components/glass";
 import { CalendarIcon, PinIcon, TargetIcon } from "../components/icons";
 import { data } from "../lib/data";
+import { nextTeeTime, whenText, type TeeTime } from "../lib/teeTimes";
 import { buildPracticePlan } from "../lib/practicePlan";
 import { useProfile } from "../lib/profile";
 import { handicapEstimate, lossAreas, summarize, type Round } from "../lib/stats";
@@ -14,7 +15,9 @@ export function Hoy() {
   const { profile } = useProfile();
   const nav = useNavigate();
   const [rounds, setRounds] = useState<Round[]>([]);
-  useEffect(() => { void data.getRounds().then(setRounds); }, []);
+  const [teeTimes, setTeeTimes] = useState<TeeTime[]>([]);
+  useEffect(() => { void data.getRounds().then(setRounds); void data.getTeeTimes().then(setTeeTimes); }, []);
+  const tee = nextTeeTime(teeTimes, new Date());
 
   const sorted = rounds.slice().sort((a, b) => b.date.localeCompare(a.date));
   const hcp = handicapEstimate(rounds);
@@ -52,7 +55,9 @@ export function Hoy() {
 
       <SectionHeader title="Próximo tee time" />
       <Card flush>
-        <ListRow icon={<CalendarIcon />} title="Sin reservas" sub="Elige un club y contáctalo desde su ficha." onClick={() => nav("/clubes")} />
+        {tee
+          ? <ListRow icon={<CalendarIcon />} title={tee.clubName} sub={whenText(tee)} onClick={() => nav("/teetime")} />
+          : <ListRow icon={<CalendarIcon />} title="Sin tee time" sub="Apunta el que reservaste con tu club." onClick={() => nav("/teetime")} />}
       </Card>
 
       {sorted.length > 0 && (

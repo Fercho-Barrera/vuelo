@@ -1,0 +1,64 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Button, Card, EmptyState, ListRow, SectionHeader } from "../components/glass";
+import { BackIcon, CalendarIcon } from "../components/icons";
+import { CLUBS } from "../lib/clubs";
+import { data } from "../lib/data";
+import { isValidTeeTime, upcoming, whenText, type TeeTime } from "../lib/teeTimes";
+
+const OTHER = "otro";
+
+export function MiTeeTime() {
+  const [list, setList] = useState<TeeTime[]>([]);
+  const [clubId, setClubId] = useState<string>(CLUBS[0]?.id ?? OTHER);
+  const [other, setOther] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const load = () => data.getTeeTimes().then(setList);
+  useEffect(() => { void load(); }, []);
+
+  const club = CLUBS.find((c) => c.id === clubId);
+  const draft = { clubName: club ? club.name : other, date, time };
+  const save = async () => {
+    if (!isValidTeeTime(draft)) return;
+    await data.saveTeeTime({ id: `t${Date.now()}`, clubId: club?.id ?? null, ...draft, clubName: draft.clubName.trim() });
+    setDate(""); setTime(""); setOther("");
+    await load();
+  };
+  const remove = async (id: string) => { await data.deleteTeeTime(id); await load(); };
+  const next = upcoming(list, new Date());
+
+  return (
+    <main className="screen">
+      <div className="topbar" style={{ marginLeft: -10 }}>
+        <Link to="/" className="icon-btn" aria-label="Volver a Hoy"><BackIcon /></Link>
+      </div>
+      <h1>Mi tee time</h1>
+      <span className="muted">Reserva con el club como siempre y apúntalo aquí. Así te lo recordamos.</span>
+
+      {next.length === 0
+        ? <Card><EmptyState title="Sin tee times próximos" text="Agrega el que reservaste con tu club." /></Card>
+        : <Card flush>{next.map((t) => (
+            <div key={t.id} className="teetime-row">
+              <ListRow icon={<CalendarIcon />} title={t.clubName} sub={whenText(t)} />
+              <Button small onClick={() => void remove(t.id)} aria-label={`Quitar tee time en ${t.clubName}`}>Quitar</Button>
+            </div>
+          ))}</Card>}
+
+      <SectionHeader title="Agregar tee time" />
+      <Card className="stack" style={{ gap: 12 }}>
+        <select className="field" aria-label="Club" value={clubId} onChange={(e) => setClubId(e.target.value)}>
+          {CLUBS.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+          <option value={OTHER}>Otro club</option>
+        </select>
+        {!club && <input className="field" aria-label="Nombre del club" placeholder="Nombre del club" value={other} onChange={(e) => setOther(e.target.value)} />}
+        <div className="row" style={{ gap: 12 }}>
+          <input className="field" type="date" aria-label="Día" value={date} onChange={(e) => setDate(e.target.value)} />
+          <input className="field" type="time" aria-label="Hora" value={time} onChange={(e) => setTime(e.target.value)} />
+        </div>
+        <Button block variant="primary" disabled={!isValidTeeTime(draft)} onClick={() => void save()}>Guardar tee time</Button>
+        <span className="label-caption">Los recordatorios de 24 y 2 horas antes se activan cuando las notificaciones estén conectadas.</span>
+      </Card>
+    </main>
+  );
+}

@@ -23,3 +23,4 @@ Format: date, decision, reason.
 
 ## Liquid Glass on the web (2026-11-19)
 Apple's "Adopting Liquid Glass" says real glass comes from system components (UITabBar, sheets) built with the latest Xcode. The web app can only approximate it, so the tab bar uses blur, specular edges, a scroll edge fade and minimizes on scroll down. A native tab bar is the path to the real material once Xcode is installed (owner task).
+- 2026-11-23 Tee times are written down by the golfer after booking with the club (no club integration or agreement yet). Reminders (24 h and 2 h before) are computed in `src/lib/teeTimes.ts` and pass the rules engine, but nothing sends them until push exists. Lock-screen text names only clubs open to non-members; private or unknown clubs read "tu campo", following brief 8.0 over the 8.1 example.

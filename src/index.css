@@ -156,3 +156,9 @@ label.avatar-pick input { position: absolute; inset: 0; opacity: 0; cursor: poin
 .faq__body { padding-bottom: var(--space-3); }
 .faq--row summary { gap: var(--space-3); min-height: 64px; }
 .faq--row summary::after, .faq--row[open] summary::after { content: none; }
+.teetime-row { display: flex; align-items: center; padding-right: var(--space-3); border-top: 1px solid var(--hairline); }
+.teetime-row:first-child { border-top: 0; }
+.teetime-row .list-row { flex: 1; min-width: 0; }
+.teetime-row .list-row + .list-row { border-top: 0; }
+select.field { appearance: none; }
+input.field[type="date"], input.field[type="time"] { min-width: 0; }

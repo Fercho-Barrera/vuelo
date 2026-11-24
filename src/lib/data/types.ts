@@ -1,5 +1,6 @@
 import type { Round } from "../stats";
 import type { PlanId } from "../plan";
+import type { TeeTime } from "../teeTimes";
 import type { SwingRecord } from "../swing/record";
 
 export type Level = "principiante" | "intermedio";
@@ -24,4 +25,7 @@ export interface DataAdapter {
   getSwings(): Promise<SwingRecord[]>;
   saveSwing(s: SwingRecord): Promise<void>;
   deleteSwing(id: string): Promise<void>;
+  getTeeTimes(): Promise<TeeTime[]>;
+  saveTeeTime(t: TeeTime): Promise<void>;
+  deleteTeeTime(id: string): Promise<void>;
 }
