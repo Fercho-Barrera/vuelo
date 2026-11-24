@@ -13,7 +13,7 @@ body {
   overscroll-behavior-y: none;
   letter-spacing: -0.011em;
 }
-button, input, select { font: inherit; }
+button, input, select, textarea { font: inherit; }
 
 .screen { padding: calc(var(--safe-top) + var(--space-5)) var(--gutter) calc(var(--safe-bottom) + 120px); max-width: 520px; margin: 0 auto; display: grid; gap: var(--space-4); align-content: start; }
 .screen h1 { font-family: var(--font-display); font-optical-sizing: auto; font-size: var(--fs-large); line-height: 1.05; margin: 0; letter-spacing: -0.03em; font-weight: 800; }
@@ -143,3 +143,13 @@ label.avatar-pick input { position: absolute; inset: 0; opacity: 0; cursor: poin
 .plan-table__head { font-weight: 700; color: var(--text-2); min-height: 44px; }
 .plan-table__pro { font-weight: 700; color: var(--accent-strong); }
 .plan-table__yes svg { width: 22px; height: 22px; }
+
+.field--area { min-height: 140px; padding: var(--space-3) var(--space-4); resize: vertical; line-height: 1.4; }
+.faq { border-top: 1px solid var(--hairline); padding: 0 var(--space-4); }
+.faq:first-child { border-top: 0; }
+.faq summary { min-height: 56px; display: flex; align-items: center; font-weight: 600; cursor: pointer; list-style: none; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; margin-left: auto; font-size: 22px; color: var(--text-2); }
+.faq[open] summary::after { content: "\2212"; }
+.faq p { margin: 0 0 var(--space-4); color: var(--text-2); line-height: 1.45; }
+.btn[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }

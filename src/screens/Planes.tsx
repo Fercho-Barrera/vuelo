@@ -29,6 +29,7 @@ const Cell = ({ v }: { v: string | boolean }) =>
 export function Planes() {
   const { profile, save } = useProfile();
   const current: PlanId = profile?.plan ?? "free";
+  const [confirming, setConfirming] = useState(false);
   const [period, setPeriod] = useState<Period>(current === "pro_monthly" ? "pro_monthly" : "pro_annual");
   if (!profile) return null;
   const choose = (plan: PlanId) => save({ ...profile, plan });
@@ -71,7 +72,14 @@ export function Planes() {
         ))}
       </Card>
 
-      {isPro(current) && <Button block onClick={() => void choose("free")}>Volver a gratis</Button>}
+      {isPro(current) && (confirming ? (
+        <Card className="stack">
+          <strong>¿Cancelar tu plan?</strong>
+          <span className="muted">Dejarás de ver el esqueleto, volver a ver tus videos y compararlos. Conservamos tu análisis.</span>
+          <Button block onClick={() => { void choose("free"); setConfirming(false); }}>Sí, cancelar mi plan</Button>
+          <Button block variant="primary" onClick={() => setConfirming(false)}>Mantener Pro</Button>
+        </Card>
+      ) : <Button block onClick={() => setConfirming(true)}>Cancelar mi plan</Button>)}
       <span className="muted" style={{ textAlign: "center" }}>El cobro aún no está conectado: elegir un plan solo lo activa en este celular.</span>
     </main>
   );

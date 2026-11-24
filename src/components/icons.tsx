@@ -20,3 +20,5 @@ export const GearIcon: I = () => (<svg {...base}><circle cx="12" cy="12" r="3" /
 export const BackIcon: I = () => (<svg {...base}><path d="M15 6l-6 6 6 6" /></svg>);
 export const CameraIcon: I = () => (<svg {...base}><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" /><circle cx="12" cy="13" r="3.5" /></svg>);
 export const CheckIcon: I = () => (<svg {...base}><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>);
+export const StarIcon: I = () => (<svg {...base}><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9-5.2-2.8-5.2 2.8 1-5.9L3.5 9.7l5.9-.8z" /></svg>);
+export const HelpIcon: I = () => (<svg {...base}><circle cx="12" cy="12" r="9" /><path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1.9-1.1 1.8M12 17h.01" /></svg>);

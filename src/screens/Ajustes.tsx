@@ -1,12 +1,13 @@
-import { Link } from "react-router-dom";
-import { Card, GlassSwitch, PillSelector, SectionHeader } from "../components/glass";
-import { BackIcon } from "../components/icons";
+import { Link, useNavigate } from "react-router-dom";
+import { Card, GlassSwitch, ListRow, PillSelector, SectionHeader } from "../components/glass";
+import { BackIcon, ChevronIcon, HelpIcon, StarIcon } from "../components/icons";
 import { NOTIFICATION_CATEGORIES } from "../lib/notifications";
 import { useProfile } from "../lib/profile";
 
 // Account configuration: personal data and notification preferences. Opened from the gear on Perfil.
 export function Ajustes() {
   const { profile, save } = useProfile();
+  const nav = useNavigate();
   if (!profile) return null;
   const set = (patch: Partial<typeof profile>) => save({ ...profile, ...patch });
   return (
@@ -37,6 +38,12 @@ export function Ajustes() {
             </div>
           ))}
         </div>
+      </Card>
+
+      <SectionHeader title="Ayuda" />
+      <Card flush>
+        <ListRow icon={<HelpIcon />} title="Preguntas frecuentes" sub="Dudas comunes o escríbenos la tuya" trail={<ChevronIcon />} onClick={() => nav("/perfil/ajustes/ayuda")} />
+        <ListRow icon={<StarIcon />} title="Reseñas y sugerencias" sub="Dinos qué mejorar" trail={<ChevronIcon />} onClick={() => nav("/perfil/ajustes/resenas")} />
       </Card>
     </main>
   );
