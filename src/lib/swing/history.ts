@@ -1,16 +1,18 @@
 import { data } from "../data";
 import { deleteClip, saveClip } from "../clips";
 import type { Frame, Result } from "./analysis";
-import { MAX_SAVED, toRecord, type SwingRecord } from "./record";
+import { swingsToPrune, type PlanId, isPro } from "../plan";
+import { toRecord, type SwingRecord } from "./record";
 
 export const listSwings = async (): Promise<SwingRecord[]> => (await data.getSwings()).sort((a, b) => b.date.localeCompare(a.date));
 
-export async function saveAnalysis(result: Extract<Result, { ok: true }>, frames: Frame[], thumb: string | null, clip: Blob): Promise<SwingRecord> {
+export async function saveAnalysis(result: Extract<Result, { ok: true }>, frames: Frame[], thumb: string | null, clip: Blob, plan: PlanId): Promise<SwingRecord> {
   const id = `s${Date.now()}`;
-  const hasClip = await saveClip(id, clip);
+  // Only Pro can watch saved clips again, so free users keep the analysis without the video.
+  const hasClip = isPro(plan) ? await saveClip(id, clip) : false;
   const rec = toRecord(id, new Date().toISOString(), result, frames, thumb, hasClip);
   await data.saveSwing(rec);
-  for (const old of (await listSwings()).slice(MAX_SAVED)) await removeSwing(old.id);
+  for (const old of swingsToPrune(plan, await listSwings(), new Date())) await removeSwing(old.id);
   return rec;
 }
 

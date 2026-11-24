@@ -13,6 +13,7 @@ import { Stats } from "./screens/Stats";
 import { NuevaRonda } from "./screens/NuevaRonda";
 import { Ronda } from "./screens/Ronda";
 import { Clubes } from "./screens/Clubes";
+import { Planes } from "./screens/Planes";
 import { Onboarding } from "./screens/Onboarding";
 import { useProfile } from "./lib/profile";
 
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="/clubes" element={<Clubes />} />
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/perfil/ajustes" element={<Ajustes />} />
+        <Route path="/planes" element={<Planes />} />
       </Routes>
       {/* Home already has the quick actions and the profile avatar at the top, so no tab bar there. */}
       {pathname !== "/" && <GlassTabBar items={TABS} />}

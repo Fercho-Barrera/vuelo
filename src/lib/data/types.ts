@@ -1,4 +1,5 @@
 import type { Round } from "../stats";
+import type { PlanId } from "../plan";
 import type { SwingRecord } from "../swing/record";
 
 export type Level = "principiante" | "intermedio";
@@ -12,6 +13,7 @@ export type Profile = {
   clubs: string[]; // clubs in the bag, e.g. "Driver", "7i"
   prefs: Record<string, boolean>; // notification categories
   photo?: string | null; // avatar as a small data URL
+  plan?: PlanId; // missing means free. Billing is not connected yet, so this is local only.
 };
 
 export interface DataAdapter {
