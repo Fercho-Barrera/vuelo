@@ -14,6 +14,7 @@ import { NuevaRonda } from "./screens/NuevaRonda";
 import { Ronda } from "./screens/Ronda";
 import { Clubes } from "./screens/Clubes";
 import { Planes } from "./screens/Planes";
+import { MiTeeTime } from "./screens/MiTeeTime";
 import { Ayuda } from "./screens/Ayuda";
 import { Resenas } from "./screens/Resenas";
 import { Onboarding } from "./screens/Onboarding";
@@ -48,6 +49,7 @@ export default function App() {
         <Route path="/perfil/ajustes" element={<Ajustes />} />
         <Route path="/perfil/ajustes/ayuda" element={<Ayuda />} />
         <Route path="/perfil/ajustes/resenas" element={<Resenas />} />
+        <Route path="/teetime" element={<MiTeeTime />} />
         <Route path="/planes" element={<Planes />} />
       </Routes>
       <GlassTabBar items={TABS} />
