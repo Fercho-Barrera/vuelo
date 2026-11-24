@@ -155,4 +155,4 @@ label.avatar-pick input { position: absolute; inset: 0; opacity: 0; cursor: poin
 .btn[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
 .faq__body { padding-bottom: var(--space-3); }
 .faq--row summary { gap: var(--space-3); min-height: 64px; }
-.faq--row summary::after { content: none; }
+.faq--row summary::after, .faq--row[open] summary::after { content: none; }
