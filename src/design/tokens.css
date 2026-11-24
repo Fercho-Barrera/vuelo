@@ -5,8 +5,8 @@
  */
 :root {
   --green-300: #8fe3b1;
-  --green-500: #0fa968;
-  --green-600: #0a8a54;
+  --green-500: #087f4c; /* 5.1:1 with white text, 4.6:1 as text on --surface */
+  --green-600: #066b40;
   --forest-900: #072a1d;
   --forest-700: #0c4a33;
   --lime: #c6f26b;
@@ -19,7 +19,7 @@
   --raised: #ffffff;
   --text: #0b0d0c;
   --text-2: #4a4f55;
-  --text-3: #8a9097;
+  --text-3: #656b72;        /* 4.9:1 on --surface */
   --hairline: #e6e8eb;
   --accent: var(--green-500);
   --accent-strong: var(--green-600);
@@ -52,11 +52,11 @@
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", Roboto, system-ui, sans-serif;
   /* Display face for headlines and numerals (optical size axis). Body stays on the system font: Apple's guidance is to override it only with a reason. */
   --font-display: "Bricolage Grotesque Variable", var(--font);
-  --fs-caption: 13px; --fs-body: 16px; --fs-title: 20px; --fs-large: 32px; --fs-hero: 64px;
+  --fs-caption: 14px; --fs-body: 16px; --fs-title: 20px; --fs-large: 32px; --fs-hero: 64px;
 
   --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-fast: 160ms; --dur: 280ms;
+  --dur-fast: 160ms; --dur: 280ms; --dur-slow: 600ms;
 
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -70,7 +70,7 @@
     --raised: #1f2124;
     --text: #f5f6f7;
     --text-2: #b6bbc1;
-    --text-3: #7d838a;
+    --text-3: #8d939a;
     --hairline: #24272a;
     --accent: #2fd68a;
     --accent-strong: #5ae0a3;
@@ -91,5 +91,5 @@
   :root { --glass-fill: var(--surface); --glass-fill-strong: var(--surface); --glass-blur: 0px; --glass-saturate: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  :root { --dur-fast: 1ms; --dur: 1ms; }
+  :root { --dur-fast: 1ms; --dur: 1ms; --dur-slow: 1ms; }
 }
