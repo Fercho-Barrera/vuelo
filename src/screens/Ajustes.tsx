@@ -27,17 +27,20 @@ export function Ajustes() {
         </div>
       </Card>
 
-      <SectionHeader title="Notificaciones" />
-      <Card>
-        <p className="muted" style={{ margin: "0 0 8px" }}>Pocas y que valgan la pena. Máximo 1 al día y 3 a la semana. Silencio de 22:00 a 08:00.</p>
-        <div className="stack">
-          {NOTIFICATION_CATEGORIES.map((c) => (
-            <div key={c.id} className="row" style={{ minHeight: 52 }}>
-              <span>{c.label}</span>
-              <GlassSwitch checked={profile.prefs[c.id]} onChange={(v) => set({ prefs: { ...profile.prefs, [c.id]: v } })} label={c.label} />
-            </div>
-          ))}
-        </div>
+      <SectionHeader title="Preferencias" />
+      <Card flush>
+        <details className="faq">
+          <summary>Notificaciones</summary>
+          <p>Pocas y que valgan la pena. Máximo 1 al día y 3 a la semana. Silencio de 22:00 a 08:00.</p>
+          <div className="stack faq__body">
+            {NOTIFICATION_CATEGORIES.map((c) => (
+              <div key={c.id} className="row" style={{ minHeight: 52 }}>
+                <span>{c.label}</span>
+                <GlassSwitch checked={profile.prefs[c.id]} onChange={(v) => set({ prefs: { ...profile.prefs, [c.id]: v } })} label={c.label} />
+              </div>
+            ))}
+          </div>
+        </details>
       </Card>
 
       <SectionHeader title="Ayuda" />
