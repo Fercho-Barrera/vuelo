@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { containRect, nearestFrame } from "./overlay";
+import { containRect, interpolateFrame } from "./overlay";
 import { compareSwings, type SwingRecord } from "./record";
 
 describe("containRect", () => {
@@ -13,10 +13,40 @@ describe("containRect", () => {
   it("fills the box when the aspect matches", () => expect(containRect(360, 640, 720, 1280)).toEqual({ x: 0, y: 0, w: 360, h: 640 }));
 });
 
-describe("nearestFrame", () => {
-  const fr = [0, 0.033, 0.066, 1].map((t) => ({ t, lm: [] }));
-  it("picks the closest sample", () => expect(nearestFrame(fr, 0.04)?.t).toBe(0.033));
-  it("returns null across a gap", () => expect(nearestFrame(fr, 0.5)).toBeNull());
+describe("interpolateFrame", () => {
+  const pt = (x: number, y: number) => ({ x, y });
+  const fr = [
+    { t: 0, lm: [pt(0, 0), pt(0.2, 0.2)] },
+    { t: 0.1, lm: [pt(0.1, 0.1), pt(0.4, 0.2)] },
+    { t: 0.2, lm: [pt(0.2, 0.2), pt(0.6, 0.2)] },
+  ];
+  it("blends landmarks between the two samples around t", () => {
+    const f = interpolateFrame(fr, 0.05);
+    expect(f?.t).toBe(0.05);
+    expect(f?.lm[0].x).toBeCloseTo(0.05);
+    expect(f?.lm[1].x).toBeCloseTo(0.3);
+  });
+  it("returns the exact sample when t lands on it", () => expect(interpolateFrame(fr, 0.1)?.lm[0]).toEqual(pt(0.1, 0.1)));
+  it("moves smoothly: no jump larger than the step between samples", () => {
+    let prev = interpolateFrame(fr, 0)!.lm[0].x;
+    for (let t = 0.005; t <= 0.2; t += 0.005) {
+      const x = interpolateFrame(fr, t)!.lm[0].x;
+      expect(Math.abs(x - prev)).toBeLessThanOrEqual(0.011);
+      prev = x;
+    }
+  });
+  it("returns null inside a hole where the person was not detected", () => {
+    const holed = [{ t: 0, lm: [pt(0, 0)] }, { t: 0.5, lm: [pt(1, 1)] }];
+    expect(interpolateFrame(holed, 0.25)).toBeNull();
+  });
+  it("keeps the edge sample for a short moment before the first or after the last", () => {
+    expect(interpolateFrame(fr, -0.05)?.lm[0]).toEqual(pt(0, 0));
+    expect(interpolateFrame(fr, 0.25)?.lm[0]).toEqual(pt(0.2, 0.2));
+  });
+  it("returns null far before or after the clip", () => {
+    expect(interpolateFrame(fr, -1)).toBeNull();
+    expect(interpolateFrame(fr, 2)).toBeNull();
+  });
 });
 
 const rec = (id: string, date: string, m: Partial<SwingRecord["metrics"]>, faults: SwingRecord["faults"] = []): SwingRecord => ({

@@ -1,32 +1,52 @@
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect, useMemo, useRef, type RefObject } from "react";
 import { VideoPlayer } from "./glass";
 import type { Fault, Frame } from "../lib/swing/analysis";
-import { containRect, drawSkeleton, nearestFrame } from "../lib/swing/overlay";
+import { containRect, drawSkeleton, interpolateFrame } from "../lib/swing/overlay";
 import type { SwingTimes } from "../lib/swing/record";
 
 function Overlay({ video, frames, faults }: { video: RefObject<HTMLVideoElement>; frames: Frame[]; faults: Fault["id"][] }) {
   const canvas = useRef<HTMLCanvasElement>(null);
+  // The parent passes a new array on every render; key on the content so the effect does not restart for nothing.
+  const key = faults.join(",");
+  const ids = useMemo(() => key.split(",").filter(Boolean) as Fault["id"][], [key]);
   useEffect(() => {
+    const v = video.current;
+    if (!v) return;
     let raf = 0;
-    const tick = () => {
-      const c = canvas.current, v = video.current;
-      if (c && v) {
-        const dpr = window.devicePixelRatio || 1;
-        const w = c.clientWidth, h = c.clientHeight;
-        if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
-        const ctx = c.getContext("2d");
-        if (ctx) {
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          ctx.clearRect(0, 0, w, h);
-          const f = nearestFrame(frames, v.currentTime);
-          if (f) drawSkeleton(ctx, f, containRect(w, h, v.videoWidth, v.videoHeight), faults);
-        }
-      }
-      raf = requestAnimationFrame(tick);
+    const draw = () => {
+      const c = canvas.current;
+      if (!c) return;
+      const dpr = window.devicePixelRatio || 1;
+      const w = c.clientWidth, h = c.clientHeight;
+      if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+      const ctx = c.getContext("2d");
+      if (!ctx) return;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      const f = interpolateFrame(frames, v.currentTime);
+      if (f) drawSkeleton(ctx, f, containRect(w, h, v.videoWidth, v.videoHeight), ids);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [video, frames, faults]);
+    // Redraw on every display frame only while the video plays; when paused, draw when the picture changes.
+    const loop = () => { draw(); raf = requestAnimationFrame(loop); };
+    const start = () => { cancelAnimationFrame(raf); loop(); };
+    const stop = () => { cancelAnimationFrame(raf); draw(); };
+    v.addEventListener("play", start);
+    v.addEventListener("pause", stop);
+    v.addEventListener("ended", stop);
+    v.addEventListener("seeked", draw);
+    v.addEventListener("loadeddata", draw);
+    window.addEventListener("resize", draw);
+    if (v.paused) draw(); else start();
+    return () => {
+      cancelAnimationFrame(raf);
+      v.removeEventListener("play", start);
+      v.removeEventListener("pause", stop);
+      v.removeEventListener("ended", stop);
+      v.removeEventListener("seeked", draw);
+      v.removeEventListener("loadeddata", draw);
+      window.removeEventListener("resize", draw);
+    };
+  }, [video, frames, ids]);
   return <canvas ref={canvas} className="vp__overlay" aria-hidden="true" />;
 }
 
