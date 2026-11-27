@@ -10,14 +10,25 @@ export function containRect(boxW: number, boxH: number, vw: number, vh: number):
   return { x: (boxW - w) / 2, y: (boxH - h) / 2, w, h };
 }
 
-// Frame closest in time, or null if the nearest sample is further than maxGap (person was not detected there).
-export function nearestFrame(frames: Frame[], t: number, maxGap = 0.12): Frame | null {
-  let best: Frame | null = null, bd = Infinity;
-  for (const f of frames) {
-    const d = Math.abs(f.t - t);
-    if (d < bd) { bd = d; best = f; }
+// Pose at time t, blended between the two samples around it so the skeleton moves with the video
+// instead of jumping every sample (pose is sampled at 30 fps, video plays at 60 to 120 fps).
+// Frames must be sorted by t. Null when t is outside the clip or inside a hole where nobody was detected
+// (the samples on either side are more than maxGap apart).
+export function interpolateFrame(frames: Frame[], t: number, maxGap = 0.12): Frame | null {
+  let lo = 0, hi = frames.length;
+  while (lo < hi) {
+    const m = (lo + hi) >> 1;
+    if (frames[m].t < t) lo = m + 1; else hi = m;
   }
-  return best && bd <= maxGap ? best : null;
+  const after = frames[lo], before = frames[lo - 1];
+  if (!before) return after && after.t - t <= maxGap ? after : null;
+  if (!after) return t - before.t <= maxGap ? before : null;
+  if (after.t - before.t > maxGap) return null;
+  const k = (t - before.t) / (after.t - before.t);
+  return {
+    t,
+    lm: before.lm.map((p, i) => ({ x: p.x + (after.lm[i].x - p.x) * k, y: p.y + (after.lm[i].y - p.y) * k })),
+  };
 }
 
 const BONES: [number, number][] = [[11, 13], [13, 15], [12, 14], [14, 16], [11, 23], [12, 24], [23, 25], [25, 27], [24, 26], [26, 28]];
