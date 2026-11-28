@@ -3,6 +3,7 @@ import { VideoPlayer } from "./glass";
 import type { Fault, Frame } from "../lib/swing/analysis";
 import { containRect, drawSkeleton, interpolateFrame } from "../lib/swing/overlay";
 import type { SwingTimes } from "../lib/swing/record";
+import type { SwingWindow } from "../lib/swing/window";
 
 function Overlay({ video, frames, faults }: { video: RefObject<HTMLVideoElement>; frames: Frame[]; faults: Fault["id"][] }) {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -51,8 +52,21 @@ function Overlay({ video, frames, faults }: { video: RefObject<HTMLVideoElement>
 }
 
 // Video with the body drawn over it (when pose data is available) and one-tap jumps to the key moments.
-export function SwingReview({ src, frames, faults, times }: { src: string; frames: Frame[] | null; faults: Fault["id"][]; times: SwingTimes | null }) {
+// With a trim window, playback starts at the swing and repeats inside it, so the address and the finish are skipped.
+export function SwingReview({ src, frames, faults, times, trim = null }: { src: string; frames: Frame[] | null; faults: Fault["id"][]; times: SwingTimes | null; trim?: SwingWindow | null }) {
   const video = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const v = video.current;
+    if (!v || !trim) return;
+    const toStart = () => { v.currentTime = trim.start; };
+    const loop = () => { if (v.currentTime >= trim.end) v.currentTime = trim.start; };
+    if (v.readyState >= 1) toStart(); else v.addEventListener("loadedmetadata", toStart, { once: true });
+    v.addEventListener("timeupdate", loop);
+    return () => {
+      v.removeEventListener("loadedmetadata", toStart);
+      v.removeEventListener("timeupdate", loop);
+    };
+  }, [trim]);
   const jump = (t: number) => { const v = video.current; if (v) { v.pause(); v.currentTime = t; } };
   return (
     <div className="stack" style={{ gap: 12 }}>

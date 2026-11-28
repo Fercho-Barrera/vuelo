@@ -2,7 +2,8 @@ import type { Frame } from "./analysis";
 
 const BASE = `${import.meta.env.BASE_URL}mediapipe`;
 const STEP = 1 / 30;
-const MAX_SECONDS = 12;
+// Only this much of a clip is analyzed. The swing must happen inside it.
+export const ANALYZED_SECONDS = 30;
 
 export type Extraction = { frames: Frame[]; sampled: number; thumb: string | null };
 
@@ -32,7 +33,7 @@ export async function extractPose(url: string, onProgress: (p: number) => void):
   v.muted = true; v.playsInline = true; v.preload = "auto"; v.src = url;
   try {
     await once(v, "loadeddata");
-    const dur = Math.min(await durationOf(v), MAX_SECONDS);
+    const dur = Math.min(await durationOf(v), ANALYZED_SECONDS);
     const frames: Frame[] = [];
     let thumb: string | null = null;
     const total = Math.max(1, Math.floor(dur / STEP));
