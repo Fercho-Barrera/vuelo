@@ -1,0 +1,12 @@
+# Secrets: the Rails master key and deployment env files never go into the repo.
+/config/master.key
+/config/*.key
+.env
+.env.*
+!.env.example
+
+/.bundle
+/log/*
+/tmp/*
+/storage/*
+/public/assets
