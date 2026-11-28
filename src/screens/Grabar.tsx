@@ -7,9 +7,10 @@ import { usePlan } from "../lib/profile";
 import { SwingReview } from "../components/SwingReview";
 import { PROBLEM_TEXT, classifyError, extensionFor, pickMime, type CameraProblem, type Facing } from "../lib/camera";
 import { analyzeSwing, type Frame, type Result } from "../lib/swing/analysis";
-import { extractPose } from "../lib/swing/extract";
+import { ANALYZED_SECONDS, extractPose } from "../lib/swing/extract";
 import { saveAnalysis } from "../lib/swing/history";
 import type { SwingRecord } from "../lib/swing/record";
+import { swingWindow, type SwingWindow } from "../lib/swing/window";
 import { Coach } from "./Coach";
 
 type Mode = "swing" | "ball";
@@ -18,7 +19,7 @@ type Analysis =
   | { state: "idle" }
   | { state: "busy"; p: number }
   | { state: "error" }
-  | { state: "done"; result: Result; frames: Frame[]; saved: SwingRecord | null };
+  | { state: "done"; result: Result; frames: Frame[]; saved: SwingRecord | null; trim: SwingWindow | null };
 const COUNTDOWN = 5;
 
 export function Grabar() {
@@ -98,12 +99,16 @@ export function Grabar() {
     if (!clip) return;
     setAnalysis({ state: "busy", p: 0 });
     try {
-      const { frames, thumb } = await extractPose(clip.url, (p) => setAnalysis({ state: "busy", p }));
+      const { frames: all, thumb } = await extractPose(clip.url, (p) => setAnalysis({ state: "busy", p }));
+      // Analyze only the swing, so the address and the finish of the clip do not count as the swing.
+      const trim = swingWindow(all);
+      const frames = trim ? all.filter((f) => f.t >= trim.start && f.t <= trim.end) : all;
       const result: Result = frames.length < 20
         ? { ok: false, reason: "No detectamos a una persona en el video. Encuádrate de cuerpo completo, con buena luz.", faults: [] }
-        : analyzeSwing(frames);
+        : trim ? analyzeSwing(frames)
+        : { ok: false, reason: `No encontramos tu swing en los primeros ${ANALYZED_SECONDS} segundos. Graba de nuevo y haz tu swing dentro de ese tiempo.`, faults: [] };
       const saved = result.ok ? await saveAnalysis(result, frames, thumb, clip.blob, plan).catch(() => null) : null;
-      setAnalysis({ state: "done", result, frames, saved });
+      setAnalysis({ state: "done", result, frames, saved, trim });
     } catch {
       setAnalysis({ state: "error" });
     }
@@ -132,6 +137,7 @@ export function Grabar() {
           frames={ok && canReplay(plan) ? done!.frames : null}
           faults={ok ? ok.faults.map((f) => f.id) : []}
           times={ok && done!.saved ? done!.saved.times : null}
+          trim={done?.trim ?? null}
         />
         {mode === "swing" && !done && (
           <Button block variant="primary" disabled={analysis.state === "busy"} onClick={() => void analyze()}>
@@ -170,7 +176,7 @@ export function Grabar() {
       <ButtonLink block to="/grabar/historial">Mis swings</ButtonLink>
       <Card tight>
         <span className="muted">
-          {mode === "swing" ? `Apoya el celular en vertical y de frente o por detrás. Al grabar hay ${COUNTDOWN} segundos para ponerte en posición. ` : "El trazado y la velocidad siempre se muestran como aprox. "}
+          {mode === "swing" ? `Apoya el celular en vertical y de frente o por detrás. Al grabar hay ${COUNTDOWN} segundos para ponerte en posición. Haz tu swing dentro de los primeros ${ANALYZED_SECONDS} segundos del video: lo que pase después no se analiza. ` : "El trazado y la velocidad siempre se muestran como aprox. "}
           {fps ? `Tu cámara graba a ${fps} fps en el navegador.` : ""}
         </span>
       </Card>
