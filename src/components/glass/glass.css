@@ -47,6 +47,7 @@
 .btn[disabled] { opacity: 0.35; pointer-events: none; }
 .btn--primary { background: var(--ink); color: var(--ink-contrast); }
 .btn--accent { background: var(--accent); color: var(--accent-contrast); }
+.btn--danger { color: var(--danger-text); }
 .btn--block { display: flex; width: 100%; }
 .btn--small { min-height: 40px; font-size: 15px; padding: 0 var(--space-4); }
 .btn:focus-visible, .pill:focus-visible, .tab:focus-visible, .chip:focus-visible, 

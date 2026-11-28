@@ -41,4 +41,12 @@ describe("session", () => {
     lock();
     expect(isUnlocked()).toBe(false);
   });
+
+  it("stays unlocked after the app is closed and opened again, until the person signs out", () => {
+    unlock();
+    sessionStorage.clear(); // what closing the app does
+    expect(isUnlocked()).toBe(true);
+    lock();
+    expect(isUnlocked()).toBe(false);
+  });
 });

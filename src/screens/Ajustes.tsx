@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MIN_AGE, parseAge } from "../lib/account";
-import { Button, Card, GlassSwitch, ListRow, PillSelector, SectionHeader } from "../components/glass";
+import { Button, ButtonAnchor, Card, GlassSwitch, ListRow, PillSelector, SectionHeader } from "../components/glass";
 import { BackIcon, BellIcon, ChevronIcon, HelpIcon, StarIcon } from "../components/icons";
+import { checkPassword, hasPassword, wipeLocalData } from "../lib/auth";
 import { NOTIFICATION_CATEGORIES } from "../lib/notifications";
 import { useProfile } from "../lib/profile";
 import { useSession } from "../lib/session";
+import { PasswordField } from "../components/PasswordField";
 
 // Account configuration: personal data and notification preferences. Opened from the gear on Perfil.
 export function Ajustes() {
@@ -13,7 +15,19 @@ export function Ajustes() {
   const nav = useNavigate();
   const { lock } = useSession();
   const [ageText, setAgeText] = useState(profile?.age ? String(profile.age) : "");
+  const [deleting, setDeleting] = useState(false);
+  const [pw, setPw] = useState("");
+  const [wrong, setWrong] = useState(false);
   if (!profile) return null;
+
+  // Accounts from before passwords have none to check; they confirm with the button alone.
+  const needsPassword = hasPassword();
+  const cancelDelete = () => { setDeleting(false); setPw(""); setWrong(false); };
+  const eraseAccount = async () => {
+    if (needsPassword && !(await checkPassword(pw))) { setWrong(true); return; }
+    await wipeLocalData();
+    location.reload();
+  };
   const set = (patch: Partial<typeof profile>) => save({ ...profile, ...patch });
   return (
     <main className="screen">
@@ -60,6 +74,24 @@ export function Ajustes() {
       </Card>
 
       <Button block onClick={lock}>Cerrar sesión</Button>
+
+      <SectionHeader title="Tu cuenta" />
+      <ButtonAnchor block href={`${import.meta.env.BASE_URL}privacidad.html`}>Política de privacidad</ButtonAnchor>
+      {!deleting ? (
+        <Button block className="btn--danger" onClick={() => setDeleting(true)}>Eliminar mi cuenta</Button>
+      ) : (
+        <Card>
+          <div className="stack" style={{ gap: 12 }}>
+            <span>Se borran de este celular tu perfil, tus swings, tus rondas, tus videos y tu contraseña. No se puede deshacer.</span>
+            {needsPassword && (
+              <PasswordField label="Tu contraseña" autoComplete="current-password" value={pw} invalid={wrong} onChange={(v) => { setPw(v); setWrong(false); }} />
+            )}
+            {wrong && <span className="field-error">Contraseña incorrecta.</span>}
+            <Button block className="btn--danger" disabled={needsPassword && pw === ""} onClick={() => void eraseAccount()}>Sí, eliminar todo</Button>
+            <Button block onClick={cancelDelete}>Cancelar</Button>
+          </div>
+        </Card>
+      )}
     </main>
   );
 }
