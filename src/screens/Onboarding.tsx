@@ -25,6 +25,7 @@ export function Onboarding() {
   const [handicap, setHandicap] = useState("");
   const [clubs, setClubs] = useState<string[]>(["Driver", "Hierro 7", "Putter"]);
   const [prefs, setPrefs] = useState(defaultPrefs);
+  const [existing, setExisting] = useState(false);
 
   const toggleClub = (c: string) => setClubs((cs) => (cs.includes(c) ? cs.filter((x) => x !== c) : [...cs, c]));
   const canNext = step === 0 ? name.trim().length > 0 : step === 1 ? accountOk(email, age, pw, pw2) : true;
@@ -34,6 +35,16 @@ export function Onboarding() {
     unlock();
   };
 
+  if (existing) {
+    return (
+      <main className="screen">
+        <h2>Ya tienes cuenta</h2>
+        <p className="muted" style={{ margin: 0 }}>Las cuentas viven en el celular donde se crearon. Para entrar desde otro celular necesitamos el servidor, que todavía no está listo.</p>
+        <Button block onClick={() => setExisting(false)}>Volver</Button>
+      </main>
+    );
+  }
+
   return (
     <main className="screen">
       <div className="progress" aria-label={`Paso ${step + 1} de ${STEPS}`}>{Array.from({ length: STEPS }, (_, i) => <span key={i} data-on={i <= step} />)}</div>
@@ -42,6 +53,7 @@ export function Onboarding() {
           <h1 style={{ fontSize: 40 }}>Tu coach de golf en el bolsillo</h1>
           <p className="muted" style={{ margin: 0 }}>Bienvenido a Vuelo. ¿Cómo te llamas?</p>
           <input className="field" aria-label="Nombre" placeholder="Tu nombre" value={name} onChange={(e) => setName(e.target.value)} autoComplete="given-name" />
+          <Button block onClick={() => setExisting(true)}>Ya tengo cuenta</Button>
         </div>
       )}
       {step === 1 && (
