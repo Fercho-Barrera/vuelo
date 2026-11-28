@@ -76,13 +76,11 @@ export function Ajustes() {
       <Button block onClick={lock}>Cerrar sesión</Button>
 
       <SectionHeader title="Tu cuenta" />
-      <Card>
-        <ButtonAnchor block href={`${import.meta.env.BASE_URL}privacidad.html`}>Política de privacidad</ButtonAnchor>
-      </Card>
-      <Card>
-        {!deleting ? (
-          <Button block className="btn--danger" onClick={() => setDeleting(true)}>Eliminar mi cuenta</Button>
-        ) : (
+      <ButtonAnchor block href={`${import.meta.env.BASE_URL}privacidad.html`}>Política de privacidad</ButtonAnchor>
+      {!deleting ? (
+        <Button block className="btn--danger" onClick={() => setDeleting(true)}>Eliminar mi cuenta</Button>
+      ) : (
+        <Card>
           <div className="stack" style={{ gap: 12 }}>
             <span>Se borran de este celular tu perfil, tus swings, tus rondas, tus videos y tu contraseña. No se puede deshacer.</span>
             {needsPassword && (
@@ -92,8 +90,8 @@ export function Ajustes() {
             <Button block className="btn--danger" disabled={needsPassword && pw === ""} onClick={() => void eraseAccount()}>Sí, eliminar todo</Button>
             <Button block onClick={cancelDelete}>Cancelar</Button>
           </div>
-        )}
-      </Card>
+        </Card>
+      )}
     </main>
   );
 }

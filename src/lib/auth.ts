@@ -1,4 +1,5 @@
-// Local password protection. It stops someone who picks up the phone, not someone who can read the device's storage:
+// Local password protection. The password is asked again only after the person signs out. It does not stop someone
+// who can read the device's storage:
 // real account security (reset by email, sign-in from another phone) arrives with the backend (docs/owner-tasks.md).
 // Only a salted PBKDF2 hash is stored, never the password.
 const KEY = "vuelo.auth.v1";
@@ -41,10 +42,11 @@ export async function checkPassword(pw: string): Promise<boolean> {
   return diff === 0;
 }
 
-// The session lasts until the app or tab is closed.
-export const isUnlocked = () => { try { return sessionStorage.getItem(SESSION) === "1"; } catch { return false; } };
-export const unlock = () => { try { sessionStorage.setItem(SESSION, "1"); } catch { /* locked sessions just ask again */ } };
-export const lock = () => { try { sessionStorage.removeItem(SESSION); } catch { /* nothing to clear */ } };
+// The session is remembered on this device until the person signs out in the app, even after the app is closed.
+// Only lock() ends it. The phone's own lock screen remains the first line of protection.
+export const isUnlocked = () => { try { return localStorage.getItem(SESSION) === "1"; } catch { return false; } };
+export const unlock = () => { try { localStorage.setItem(SESSION, "1"); } catch { /* without storage the person signs in again next time */ } };
+export const lock = () => { try { localStorage.removeItem(SESSION); } catch { /* nothing to clear */ } };
 
 // Forgotten password with no server to reset it: the only way back in is to erase this phone's data.
 export async function wipeLocalData() {
