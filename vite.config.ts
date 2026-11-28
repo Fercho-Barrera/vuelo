@@ -5,5 +5,5 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   base: process.env.PAGES ? "/vuelo/" : "/",
   plugins: [react()],
-  test: { environment: "jsdom", globals: true },
+  test: { environment: "jsdom", globals: true, setupFiles: ["./vitest.setup.ts"] },
 });
